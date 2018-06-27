@@ -1,8 +1,10 @@
 package de.nexible.gauge.testrail.context;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import static java.lang.System.getenv;
 import static java.nio.file.Paths.get;
@@ -25,6 +27,10 @@ public class GaugeContext {
 
     public String getGaugeReportsDir() {
         return getenv("gauge_reports_dir");
+    }
+
+    public String getGaugeLogDir() {
+        return System.getenv("logs_directory");
     }
 
     private void ensureTestRailReportsDir() throws IOException {

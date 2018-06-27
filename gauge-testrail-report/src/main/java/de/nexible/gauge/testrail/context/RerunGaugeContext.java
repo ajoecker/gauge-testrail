@@ -17,4 +17,9 @@ public class RerunGaugeContext extends GaugeContext {
     public String getGaugeReportsDir() {
         return "reports";
     }
+
+    @Override
+    public String getGaugeLogDir() {
+        return "logs";
+    }
 }

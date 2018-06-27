@@ -2,6 +2,10 @@ package de.nexible.gauge.testrail.context;
 
 import com.gurock.testrail.APIClient;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.logging.Logger;
 
 public class TestRailContext {
@@ -20,5 +24,14 @@ public class TestRailContext {
 
     public String getTestRailRunId() {
         return System.getenv("testrail.run.id");
+    }
+
+    public void dump(Path output) throws IOException {
+        try (PrintWriter pw = new PrintWriter(Files.newBufferedWriter(output))) {
+            pw.println("testrail.url = " + System.getenv("testrail.url"));
+            pw.println("testrail.token = " + System.getenv("testrail.token"));
+            pw.println("testrail.user = " + System.getenv("testrail.user"));
+            pw.println("testrail.run.id = " + System.getenv("testrail.run.id"));
+        }
     }
 }

@@ -1,5 +1,7 @@
 package de.nexible.gauge.testrail;
 
+import de.nexible.gauge.testrail.context.GaugeContext;
+
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -21,9 +23,10 @@ import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
 public class GaugeTestRailLogger {
-    public static void initializeLogger() {
-        String root = System.getenv("GAUGE_PROJECT_ROOT");
-        String reportsDir = System.getenv("logs_directory");
+    public static void initializeLogger(GaugeContext context) {
+        String root = context.getGaugeProjectRoot();
+        String reportsDir = context.getGaugeLogDir();
+        System.out.println("Init with " + root + " and " + reportsDir);
         Path logFile = Paths.get(root, reportsDir, "testrail.log");
         try {
             FileHandler fileHandler = new FileHandler(logFile.toString(), 0, 1, false);

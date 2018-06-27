@@ -28,11 +28,11 @@ public class GaugeTestRail {
     }
 
     private void run() throws IOException, APIException {
-        GaugeTestRailLogger.initializeLogger();
         GaugeContext gaugeContext = getGaugeContext();
+        GaugeTestRailLogger.initializeLogger(gaugeContext);
         TestRailContext testRailContext = getTestRailContext();
 
-        GaugeLastRun gaugeLastRun = new GaugeLastRun(gaugeContext);
+        GaugeLastRun gaugeLastRun = new GaugeLastRun(gaugeContext, testRailContext);
         TestRailHandler testRailHandler = new TestRailHandler(testRailContext);
 
         if (gaugeContext.isRerun()) {
