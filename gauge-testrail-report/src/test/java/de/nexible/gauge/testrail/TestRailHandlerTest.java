@@ -3,6 +3,7 @@ package de.nexible.gauge.testrail;
 import com.gurock.testrail.APIClient;
 import com.gurock.testrail.APIException;
 import com.thoughtworks.gauge.Spec;
+import de.nexible.gauge.testrail.context.TestRailContext;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,10 +11,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.util.Arrays;
 
+import static de.nexible.gauge.testrail.SpecBuildHelper.scenario;
+import static de.nexible.gauge.testrail.SpecBuildHelper.suiteResult;
 import static de.nexible.gauge.testrail.model.TestResult.TestResultBuilder.newTestResult;
-import static java.util.Arrays.asList;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -82,21 +83,8 @@ public class TestRailHandlerTest {
         return expected;
     }
 
-    private Spec.ProtoScenario scenario(String... tag) {
-        Spec.ProtoScenario.Builder scenario = Spec.ProtoScenario.newBuilder();
-        Spec.ProtoStep step = Spec.ProtoStep.newBuilder().setActualText("This is a simple step").build();
-        Spec.ProtoItem scenarioItem = Spec.ProtoItem.newBuilder().setItemType(Spec.ProtoItem.ItemType.Step).setStep(step).build();
-        scenario.setScenarioHeading("a simple test").addScenarioItems(scenarioItem).setExecutionStatusValue(1).setExecutionTime(1234);
-
-        if (tag != null) {
-            Arrays.stream(tag).forEach(scenario::addTags);
-        }
-
-        return scenario.build();
-    }
-
     private void handle(Spec.ProtoScenario scenario) throws IOException, APIException {
-        new TestRailHandler(testRailContext).handle(asList(scenario));
+        new TestRailHandler(testRailContext).handle(suiteResult(scenario));
     }
 
     private static final class TestContext extends TestRailContext {

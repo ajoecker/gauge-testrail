@@ -6,9 +6,6 @@ import com.thoughtworks.gauge.Spec;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -21,10 +18,12 @@ public class GaugeConnector {
     private static final String LOCALHOST = "127.0.0.1";
 
     private final TestRailHandler testRailHandler;
+    private GaugeLastRun gaugeLastRun;
     private Socket socket;
 
-    public GaugeConnector(TestRailHandler testRailHandler) {
+    public GaugeConnector(TestRailHandler testRailHandler, GaugeLastRun gaugeLastRun) {
         this.testRailHandler = testRailHandler;
+        this.gaugeLastRun = gaugeLastRun;
     }
 
     public void connect() {
@@ -63,26 +62,7 @@ public class GaugeConnector {
         logger.info(() -> "retrieved suite execution result message");
         Messages.SuiteExecutionResult executionResult = message.getSuiteExecutionResult();
         Spec.ProtoSuiteResult suiteResult = executionResult.getSuiteResult();
-        persistRun(suiteResult);
-        testRailHandler.handle(retrieveScenarios(suiteResult));
-    }
-
-    private void persistRun(Spec.ProtoSuiteResult suiteResult) throws IOException {
-        String root = System.getenv("GAUGE_PROJECT_ROOT");
-        String reportsDir = System.getenv("gauge_reports_dir");
-        Path dest = Paths.get(root, reportsDir, "testrail");
-        Files.createDirectories(dest);
-
-        Path lastRunFilePath = dest.resolve("last_run.json").normalize();
-        logger.info(() -> "persisting this run into " + lastRunFilePath);
-        Files.write(lastRunFilePath, suiteResult.toString().getBytes());
-    }
-
-    private List<Spec.ProtoScenario> retrieveScenarios(Spec.ProtoSuiteResult suiteResult) {
-        return suiteResult.getSpecResultsList().stream()
-                .map(Spec.ProtoSpecResult::getProtoSpec)
-                .flatMap(ps -> ps.getItemsList().stream())
-                .filter(protoItem -> protoItem.getItemType() == Spec.ProtoItem.ItemType.Scenario)
-                .map(Spec.ProtoItem::getScenario).collect(Collectors.toList());
+        gaugeLastRun.persistRun(suiteResult);
+        testRailHandler.handle(suiteResult);
     }
 }

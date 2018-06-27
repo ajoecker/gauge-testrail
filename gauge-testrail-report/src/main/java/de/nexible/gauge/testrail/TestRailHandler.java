@@ -2,15 +2,13 @@ package de.nexible.gauge.testrail;
 
 import com.gurock.testrail.APIException;
 import com.thoughtworks.gauge.Spec;
+import de.nexible.gauge.testrail.context.TestRailContext;
 import de.nexible.gauge.testrail.model.TestResult;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.io.IOException;
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
@@ -34,7 +32,16 @@ public final class TestRailHandler {
         this.testRailContext = testRailContext;
     }
 
-    public void handle(List<Spec.ProtoScenario> scenarios) throws IOException, APIException {
+    private List<Spec.ProtoScenario> retrieveScenarios(Spec.ProtoSuiteResult suiteResult) {
+        return suiteResult.getSpecResultsList().stream()
+                .map(Spec.ProtoSpecResult::getProtoSpec)
+                .flatMap(ps -> ps.getItemsList().stream())
+                .filter(protoItem -> protoItem.getItemType() == Spec.ProtoItem.ItemType.Scenario)
+                .map(Spec.ProtoItem::getScenario).collect(Collectors.toList());
+    }
+
+    public void handle(Spec.ProtoSuiteResult suiteResult) throws IOException, APIException {
+        List<Spec.ProtoScenario> scenarios = retrieveScenarios(suiteResult);
         String testRailRunId = testRailContext.getTestRailRunId();
 
         if (testRailRunId == null || "".equals(testRailRunId)) {
@@ -70,7 +77,6 @@ public final class TestRailHandler {
 
     private List<TestResult> createTestResult(Spec.ProtoScenario protoScenario) {
         int status = mapStatusToTestRail(protoScenario.getExecutionStatus());
-        logger.info(() -> "status of " + protoScenario.getScenarioHeading() + " is " + status);
         if (status == IGNORE) {
             return Collections.emptyList();
         }

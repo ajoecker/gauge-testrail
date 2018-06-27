@@ -1,4 +1,4 @@
-package de.nexible.gauge.testrail;
+package de.nexible.gauge.testrail.context;
 
 import com.gurock.testrail.APIClient;
 
