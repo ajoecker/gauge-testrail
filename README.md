@@ -13,4 +13,5 @@ Utility application, to ensure that
 - all test scenarios defined in a gauge project are existing in a TestRail repository
 - creating new test cases in TestRails based on gauge scenarios
 - updating a gauge project and tag scenarios with TestRail case ids
-** The sync project is at start and does not provide any working functionality right now**
+
+__The sync project is at start and does not provide any working functionality right now__
