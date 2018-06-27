@@ -10,7 +10,6 @@
     <modules>
         <module>gauge-testrail-sync</module>
         <module>gauge-testrail-report</module>
-        <module>gauge-testrail-report-distro</module>
     </modules>
     <packaging>pom</packaging>
 
