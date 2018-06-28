@@ -20,7 +20,7 @@ import static de.nexible.gauge.testrail.TestRailTimespanHandler.toTimeFormat;
 import static de.nexible.gauge.testrail.model.TestResult.TestResultBuilder.newTestResult;
 
 /**
- * A {@link TestRailHandler} to upload test results from gauge to TestRails
+ * A {@link TestRailHandler} to upload test results from gauge to TestRail
  *
  * @author ajoecker
  */
@@ -75,7 +75,7 @@ public final class TestRailDefaultHandler implements TestRailHandler {
 
         if (!a.isEmpty()) {
             jsonObject.put("results", a);
-            logger.info(() -> "send to TestRails: " + jsonObject);
+            logger.info(() -> "send to TestRail: " + jsonObject);
         }
         return jsonObject;
     }

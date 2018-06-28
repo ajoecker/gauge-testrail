@@ -50,8 +50,9 @@ Any scenario, that do not have any TestRail case id tagged to it, will be ignore
 In this case, the scenario result is posted individually for each of the tagged TestRail case ids.
 
 ### Logs
-The plugin creates the log file `testrails.log` in the `logs` folder of the gauge project. Remember, the log file is overwritten with each run of the plugin
+The plugin creates the log file `testrail.log` in the `logs` folder of the gauge project. Remember, the log file is overwritten with each run of the plugin
 
-### ToDos
-- Rerun possibility in case of an issue while reporting to TestRail. This means to make sure that the Gauge results can be reused,
-when something went wrong during posting the results to TestRail to avoid running the whole gauge test suite again
+### Rerun
+If in any case the posting to TestRail failed, it is possible to re-start the plugin without the need to re-build the gauge test result.
+The plugin creates a file called `last_run.json` inside the `reports/testrail` directory along with the properties that were used for the last run and an executable file.
+To re-run the plugin and to post the test results from the last run to TestRail, one can simply call `./testrail-recovery`

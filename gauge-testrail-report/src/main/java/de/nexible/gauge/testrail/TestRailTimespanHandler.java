@@ -6,7 +6,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 /**
- * Converts gauge execution time in milliseconds to TestRails time span format like <code>1m 20.234s</code>
+ * Converts gauge execution time in milliseconds to TestRail time span format like <code>1m 20.234s</code>
  *
  * @author ajoecker
  */
