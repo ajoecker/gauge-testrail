@@ -6,7 +6,7 @@
 
     <groupId>de.nexible.end2end.gauge-testrail</groupId>
     <artifactId>gauge-testrail</artifactId>
-    <version>0.0.1</version>
+    <version>0.0.2-SNAPSHOT</version>
     <modules>
         <module>gauge-testrail-sync</module>
         <module>gauge-testrail-report</module>
