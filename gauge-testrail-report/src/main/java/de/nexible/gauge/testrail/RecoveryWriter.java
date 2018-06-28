@@ -1,11 +1,15 @@
 package de.nexible.gauge.testrail;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+/**
+ * Writes executables files for starting a rerun to post Gauge test results to TestRail.
+ *
+ * @author ajoecker
+ */
 public class RecoveryWriter {
     private final String suffix;
     private final String header;
@@ -17,10 +21,20 @@ public class RecoveryWriter {
         this.header = header;
     }
 
+    /**
+     * Creates a new {@link RecoveryWriter} for writing a <code>bat</code> file to rerun
+     *
+     * @return
+     */
     public static RecoveryWriter forWindows() {
         return new RecoveryWriter(".bat", "@echo off");
     }
 
+    /**
+     * Creates a new {@link RecoveryWriter} for writing a <code>sh</code> file to rerun
+     *
+     * @return
+     */
     public static RecoveryWriter forUnix() {
         return new RecoveryWriter(".sh", "#!/bin/bash");
     }

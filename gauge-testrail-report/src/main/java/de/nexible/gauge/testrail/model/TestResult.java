@@ -2,6 +2,13 @@ package de.nexible.gauge.testrail.model;
 
 import org.json.simple.JSONObject;
 
+/**
+ * A model class to hold the test results for a test case.
+ *
+ * The attributes of the objects are mapped to the api fields from TestRail
+ *
+ * @author ajoecker
+ */
 public final class TestResult {
     // format of variables match testrail api fields
     private String case_id;

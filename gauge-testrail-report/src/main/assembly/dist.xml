@@ -11,8 +11,6 @@
             <scope>compile</scope>
             <excludes>
                 <exclude>junit:junit</exclude>
-                <exclude>org.junit.jupiter:junit-jupiter-api</exclude>
-                <exclude>org.mockito:mockito-all</exclude>
             </excludes>
         </dependencySet>
     </dependencySets>

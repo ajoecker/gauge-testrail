@@ -18,6 +18,6 @@ public class TestRailTimespanHandlerTest {
 
     @Test
     public void withMinutes() {
-        assertEquals(toTimeFormat(1000 * 62), "1m 2.000s");
+        assertEquals(toTimeFormat(10860), "10.860s");
     }
 }

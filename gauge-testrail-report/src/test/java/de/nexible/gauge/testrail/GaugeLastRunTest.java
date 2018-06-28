@@ -1,10 +1,9 @@
 package de.nexible.gauge.testrail;
 
 import com.thoughtworks.gauge.Spec;
-import de.nexible.gauge.testrail.context.GaugeContext;
-import de.nexible.gauge.testrail.context.TestRailContext;
+import de.nexible.gauge.testrail.context.GaugeDefaultContext;
+import de.nexible.gauge.testrail.context.TestRailDefaultContext;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import java.io.IOException;
@@ -22,7 +21,7 @@ public class GaugeLastRunTest {
         try {
             Path lastrun = Files.createTempFile("lastrun", ".json");
             lastrun.toFile().deleteOnExit();
-            GaugeContext gaugeContext = new GaugeContext() {
+            GaugeDefaultContext gaugeDefaultContext = new GaugeDefaultContext() {
                 @Override
                 public String getGaugeProjectRoot() {
                     try {
@@ -39,7 +38,7 @@ public class GaugeLastRunTest {
                 }
             };
 
-            GaugeLastRun gaugeLastRun = new GaugeLastRun(gaugeContext, Mockito.mock(TestRailContext.class));
+            GaugeLastRun gaugeLastRun = new GaugeLastRun(gaugeDefaultContext, Mockito.mock(TestRailDefaultContext.class));
             gaugeLastRun.persistRun(expected);
 
             assertEquals(expected, gaugeLastRun.recoverLastRun());

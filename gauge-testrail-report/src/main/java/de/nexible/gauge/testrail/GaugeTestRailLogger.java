@@ -1,17 +1,15 @@
 package de.nexible.gauge.testrail;
 
 import de.nexible.gauge.testrail.context.GaugeContext;
+import de.nexible.gauge.testrail.context.GaugeDefaultContext;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.FileHandler;
 import java.util.logging.Formatter;
@@ -20,14 +18,18 @@ import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
 
+/**
+ * Logger logs on console and in the <code>testrail.log</code> file in the logs directory of gauge
+ *
+ * @author ajoecker
+ */
 public class GaugeTestRailLogger {
     public static void initializeLogger(GaugeContext context) {
         String root = context.getGaugeProjectRoot();
-        String reportsDir = context.getGaugeLogDir();
-        System.out.println("Init with " + root + " and " + reportsDir);
-        Path logFile = Paths.get(root, reportsDir, "testrail.log");
+        String logsDir = context.getGaugeLogDir();
+        System.out.println("Init with " + root + " and " + logsDir);
+        Path logFile = Paths.get(root, logsDir, "testrail.log");
         try {
             FileHandler fileHandler = new FileHandler(logFile.toString(), 0, 1, false);
             CustomLogFormatter customLogFormatter = new CustomLogFormatter();

@@ -3,7 +3,7 @@ package de.nexible.gauge.testrail;
 import com.gurock.testrail.APIClient;
 import com.gurock.testrail.APIException;
 import com.thoughtworks.gauge.Spec;
-import de.nexible.gauge.testrail.context.TestRailContext;
+import de.nexible.gauge.testrail.context.TestRailDefaultContext;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,12 +20,12 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 
-public class TestRailHandlerTest {
-    private TestContext testRailContext;
+public class TestRailHandlerTestDefault {
+    private TestDefaultContext testRailContext;
 
     @BeforeEach
     public void setup() {
-        testRailContext = new TestContext();
+        testRailContext = new TestDefaultContext();
         testRailContext.testrunId = "5";
     }
 
@@ -76,7 +76,7 @@ public class TestRailHandlerTest {
         JSONObject expected = new JSONObject();
         JSONArray jsonArray = new JSONArray();
         for (String tag : tags) {
-            jsonArray.add(newTestResult().comment("Test executed automatically uploaded by Gauge at " + TestRailHandler.UPLOAD_TIME + ". Testcase: 'a simple test'")
+            jsonArray.add(newTestResult().comment("Test executed automatically uploaded by Gauge at " + TestRailDefaultHandler.UPLOAD_TIME + ". Testcase: 'a simple test'")
                     .elapsed("1.234s").withStatus(1).forCase(tag.substring(1)).done().toJsonObject());
         }
         expected.put("results", jsonArray);
@@ -84,10 +84,10 @@ public class TestRailHandlerTest {
     }
 
     private void handle(Spec.ProtoScenario scenario) throws IOException, APIException {
-        new TestRailHandler(testRailContext).handle(suiteResult(scenario));
+        new TestRailDefaultHandler(testRailContext).handle(suiteResult(scenario));
     }
 
-    private static final class TestContext extends TestRailContext {
+    private static final class TestDefaultContext extends TestRailDefaultContext {
         private String testrunId;
         private APIClient apiClient = mock(APIClient.class);
 

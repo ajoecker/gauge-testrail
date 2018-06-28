@@ -3,35 +3,33 @@ package de.nexible.gauge.testrail.context;
 import com.gurock.testrail.APIClient;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.logging.Logger;
 
-public class TestRailContext {
-    private static final Logger logger = Logger.getLogger(TestRailContext.class.getName());
+/**
+ * A {@link TestRailContext} is the bridge to TestRail information
+ *
+ * @author ajoecker
+ */
+public interface TestRailContext {
+    /**
+     * Returns the client for TestRail interactions
+     *
+     * @return
+     */
+    APIClient getTestRailClient();
 
-    public APIClient getTestRailClient() {
-        String url = System.getenv("testrail.url");
-        String token = System.getenv("testrail.token");
-        String user = System.getenv("testrail.user");
-        logger.info(() -> "connecting to testrail instance " + url + " as " + user + " / " + token);
-        APIClient client = new APIClient(url);
-        client.setPassword(token);
-        client.setUser(user);
-        return client;
-    }
+    /**
+     * Returns the test run id for which results shall be posted
+     *
+     * @return
+     */
+    String getTestRailRunId();
 
-    public String getTestRailRunId() {
-        return System.getenv("testrail.run.id");
-    }
-
-    public void dump(Path output) throws IOException {
-        try (PrintWriter pw = new PrintWriter(Files.newBufferedWriter(output))) {
-            pw.println("testrail.url = " + System.getenv("testrail.url"));
-            pw.println("testrail.token = " + System.getenv("testrail.token"));
-            pw.println("testrail.user = " + System.getenv("testrail.user"));
-            pw.println("testrail.run.id = " + System.getenv("testrail.run.id"));
-        }
-    }
+    /**
+     * Dumps all information of the context as properties into the given output.
+     *
+     * @param output
+     * @throws IOException
+     */
+    void dump(Path output) throws IOException;
 }

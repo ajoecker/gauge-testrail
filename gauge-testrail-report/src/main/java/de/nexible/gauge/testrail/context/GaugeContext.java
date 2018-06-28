@@ -1,42 +1,45 @@
 package de.nexible.gauge.testrail.context;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
-import static java.lang.System.getenv;
-import static java.nio.file.Paths.get;
+/**
+ * A {@link GaugeContext} represents the bridge to Gauge relevant information.
+ *
+ * @author ajoecker
+ */
+public interface GaugeContext {
+    /**
+     * Whether the current run of the plugin is a rerun.
+     *
+     * @return
+     */
+    boolean isRerun();
 
-public class GaugeContext {
-    private Path testRailReportsDir;
+    /**
+     * Returns the root directory of the gauge project the plugin was run from
+     *
+     * @return
+     */
+    String getGaugeProjectRoot();
 
-    public Path getTestRailReportDir() throws IOException {
-        ensureTestRailReportsDir();
-        return testRailReportsDir;
-    }
+    /**
+     * Returns the name of the report directory
+     *
+     * @return
+     */
+    String getGaugeReportsDir();
 
-    public boolean isRerun() {
-        return false;
-    }
+    /**
+     * Returns the name of the log directory
+     *
+     * @return
+     */
+    String getGaugeLogDir();
 
-    public String getGaugeProjectRoot() {
-        return getenv("GAUGE_PROJECT_ROOT");
-    }
-
-    public String getGaugeReportsDir() {
-        return getenv("gauge_reports_dir");
-    }
-
-    public String getGaugeLogDir() {
-        return System.getenv("logs_directory");
-    }
-
-    private void ensureTestRailReportsDir() throws IOException {
-        if (testRailReportsDir == null) {
-            testRailReportsDir = get(getGaugeProjectRoot(), getGaugeReportsDir(), "testrail");
-            Files.createDirectories(testRailReportsDir);
-        }
-    }
+    /**
+     * Returns the path to the reports directory used by the plugin
+     *
+     * @return
+     */
+    Path getTestRailReportDir();
 }
