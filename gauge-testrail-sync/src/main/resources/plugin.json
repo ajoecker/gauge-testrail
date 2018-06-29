@@ -1,0 +1,16 @@
+{
+  "id": "testrail-sync",
+  "name": "testrail sync plugin",
+  "version": "0.0.1",
+  "description": "Synchronizes gauge project with TestRail",
+  "command" : {
+    "windows": ["launch.cmd"],
+    "linux": ["/bin/sh", "launch.sh"],
+    "darwin": ["/bin/sh", "launch.sh"]
+  },
+  "scope" : ["documentation"],
+  "gaugeVersionSupport": {
+    "minimum": "0.9.7",
+    "maximum": ""
+  }
+}
