@@ -1,6 +1,9 @@
-package de.nexible.gauge.testrail.sync;
+package de.nexible.gauge.testrail.sync.context;
 
 import de.nexible.gauge.testrail.config.TestRailDefaultContext;
+
+import static java.lang.Integer.parseInt;
+import static java.lang.System.getenv;
 
 /**
  * A {@link TestRailSynContext} that is used when the plugin runs inside of gauge test run
@@ -8,24 +11,28 @@ import de.nexible.gauge.testrail.config.TestRailDefaultContext;
  * @author ajoecker
  */
 public class TestRailSyncDefaultContext extends TestRailDefaultContext implements TestRailSynContext {
+    @Override
+    public int getGaugeApiPort() {
+        return parseInt(getenv("GAUGE_API_PORT"));
+    }
 
     @Override
     public String getGaugeTemplateId() {
-        return System.getenv("testrail.gauge.template.id");
+        return getenv("testrail.gauge.template.id");
     }
 
     @Override
     public String getSpecFieldLabel() {
-        return System.getenv("testrail.gauge.spec.label");
+        return getenv("testrail.gauge.spec.label");
     }
 
     @Override
     public String getSectionId() {
-        return System.getenv("testrail.section");
+        return getenv("testrail.section");
     }
 
     @Override
     public String getSpecLink() {
-        return System.getenv("testrail.gauge.link");
+        return getenv("testrail.gauge.link");
     }
 }

@@ -14,7 +14,19 @@ import java.util.stream.Collectors;
 
 import static com.thoughtworks.gauge.Api.APIMessage.newBuilder;
 
+/**
+ * The {@link GaugeSpecRetriever} fetches all specs from a Gauge report
+ *
+ * @author ajoecker
+ */
 public class GaugeSpecRetriever {
+    /**
+     * Fetches all specifications from the given socket
+     *
+     * @param gaugeSocket
+     * @return
+     * @throws IOException
+     */
     public List<Spec.ProtoSpec> fetchAllSpecs(Socket gaugeSocket) throws IOException {
         Api.APIMessage response = getAPIResponse(getSpecApiMessage(), gaugeSocket);
         Api.SpecsResponse specsResponse = response.getSpecsResponse();

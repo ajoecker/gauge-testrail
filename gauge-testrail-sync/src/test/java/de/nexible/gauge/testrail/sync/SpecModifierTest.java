@@ -1,7 +1,6 @@
 package de.nexible.gauge.testrail.sync;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
 
@@ -103,8 +102,8 @@ public class SpecModifierTest {
     private void verifyChange(String s, String newTag, SpecModifier specModifier) throws IOException {
         Path testrailsyn = Files.createTempFile("testrailsyn", ".spec");
         Files.write(testrailsyn, s.getBytes());
-        SpecModification m = new SpecModification(testrailsyn.toString());
-        //m.add(new SpecWithTag("a scenario", newTag));
+        SpecModifications m = new SpecModifications(testrailsyn.toString());
+        m.setTag("a scenario", newTag);
         specModifier.persistChanges(ImmutableList.of(m));
         Files.deleteIfExists(testrailsyn);
     }

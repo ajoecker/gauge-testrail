@@ -44,3 +44,6 @@ The plugin inspects all scenarios in the project and checks, whether the scenari
 If not, the test case is uploaded to TestRail and the spec file is changed with the newly created TestRail case id added.
 
 __Attention__ if the gauge project, the plugin is running on, is under version control, any changes made by the plugin must be committed manually !
+
+### Important notice
+The specifications and scenarios __must__ be written with the `#` or `##`, respectively !

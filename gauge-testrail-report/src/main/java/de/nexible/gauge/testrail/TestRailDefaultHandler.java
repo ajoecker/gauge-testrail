@@ -2,6 +2,7 @@ package de.nexible.gauge.testrail;
 
 import com.gurock.testrail.APIException;
 import com.thoughtworks.gauge.Spec;
+import de.nexible.gauge.testrail.config.TestRailConfig;
 import de.nexible.gauge.testrail.context.TestRailReportContext;
 import de.nexible.gauge.testrail.model.TestResult;
 import org.json.simple.JSONArray;
@@ -26,7 +27,6 @@ import static de.nexible.gauge.testrail.model.TestResult.TestResultBuilder.newTe
  */
 public final class TestRailDefaultHandler implements TestRailHandler {
     private static final Logger logger = Logger.getLogger(TestRailDefaultHandler.class.getName());
-    private static final Pattern TESTRAIL_PATTERN = Pattern.compile("^[Cc]\\d+$");
     // test-friendly
     static final String UPLOAD_TIME = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss"));
     private static final int IGNORE = 0;
@@ -97,7 +97,7 @@ public final class TestRailDefaultHandler implements TestRailHandler {
 
     private List<String> getTestRailCaseIds(Spec.ProtoScenario protoScenario) {
         return protoScenario.getTagsList().stream()
-                .filter(this::isTestRailTag)
+                .filter(TestRailConfig::isTestRailTag)
                 .map(id -> id.substring(1))
                 .collect(Collectors.toList());
     }
@@ -119,9 +119,5 @@ public final class TestRailDefaultHandler implements TestRailHandler {
             default:
                 return IGNORE; // rest is ignored currently
         }
-    }
-
-    private boolean isTestRailTag(String s) {
-        return TESTRAIL_PATTERN.matcher(s).find();
     }
 }
