@@ -43,4 +43,4 @@ Call `gauge uninstall testrail-sync` and remove the entry from the `manifest.jso
 The plugin inspects all scenarios in the project and checks, whether the scenarios have a TestRail tag (`Cxxx`).
 If not, the test case is uploaded to TestRail and the spec file is changed with the newly created TestRail case id added.
 
-__Attention__ if the project is under version control, any changes made by the plugin must be committed manually !
+__Attention__ if the gauge project, the plugin is running on, is under version control, any changes made by the plugin must be committed manually !
