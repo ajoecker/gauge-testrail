@@ -16,10 +16,12 @@ public class GaugeConnector {
 
     public List<Spec.ProtoSpec> connect() throws IOException {
         Socket gaugeSocket = openSocket(Integer.parseInt(System.getenv("GAUGE_API_PORT")));
-        List<Spec.ProtoSpec> protoSpecList = gaugeStepRetriever.fetchAllSteps(gaugeSocket);
-        System.out.println(protoSpecList);
-        gaugeSocket.close();
-        return protoSpecList;
+        try {
+            return gaugeStepRetriever.fetchAllSteps(gaugeSocket);
+        }
+        finally {
+            gaugeSocket.close();
+        }
     }
 
     private static Socket openSocket(int port) {

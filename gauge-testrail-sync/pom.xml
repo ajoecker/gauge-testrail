@@ -10,13 +10,6 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>gauge-testrail-sync</artifactId>
-    <dependencies>
-        <dependency>
-            <groupId>org.eclipse.jgit</groupId>
-            <artifactId>org.eclipse.jgit</artifactId>
-            <version>5.0.0.201805151920-m7</version>
-        </dependency>
-    </dependencies>
     <properties>
         <plugin.output.directory>artifacts</plugin.output.directory>
         <plugin.output.name>testrail-sync</plugin.output.name>
