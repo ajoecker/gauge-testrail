@@ -1,7 +1,6 @@
 package de.nexible.gauge.testrail;
 
-import de.nexible.gauge.testrail.context.GaugeContext;
-import de.nexible.gauge.testrail.context.GaugeDefaultContext;
+import de.nexible.gauge.testrail.context.GaugeReportContext;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -25,7 +24,7 @@ import java.util.logging.Logger;
  * @author ajoecker
  */
 public class GaugeTestRailLogger {
-    public static void initializeLogger(GaugeContext context) {
+    public static void initializeLogger(GaugeReportContext context) {
         String root = context.getGaugeProjectRoot();
         String logsDir = context.getGaugeLogDir();
         System.out.println("Init with " + root + " and " + logsDir);

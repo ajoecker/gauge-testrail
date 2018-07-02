@@ -9,9 +9,6 @@ Gauge plugin, that posts Gauge test results to a test run in TestRail.
 See project documentation for more information
 
 ### gauge-testrail-sync
-Utility application, to ensure that
-- all test scenarios defined in a gauge project are existing in a TestRail repository
-- creating new test cases in TestRail based on gauge scenarios
-- updating a gauge project and tag scenarios with TestRail case ids
+Gauge plugin, to synchronize gauge test cases with TestRail.
 
-__The sync project is at start and does not provide any working functionality right now__
+See project documentation for more information

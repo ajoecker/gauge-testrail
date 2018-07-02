@@ -2,7 +2,7 @@ package de.nexible.gauge.testrail;
 
 import com.gurock.testrail.APIException;
 import com.thoughtworks.gauge.Spec;
-import de.nexible.gauge.testrail.context.TestRailContext;
+import de.nexible.gauge.testrail.context.TestRailReportContext;
 import de.nexible.gauge.testrail.model.TestResult;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -30,9 +30,9 @@ public final class TestRailDefaultHandler implements TestRailHandler {
     // test-friendly
     static final String UPLOAD_TIME = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss"));
     private static final int IGNORE = 0;
-    private final TestRailContext testRailContext;
+    private final TestRailReportContext testRailContext;
 
-    public TestRailDefaultHandler(TestRailContext testRailContext) {
+    public TestRailDefaultHandler(TestRailReportContext testRailContext) {
         this.testRailContext = testRailContext;
     }
 

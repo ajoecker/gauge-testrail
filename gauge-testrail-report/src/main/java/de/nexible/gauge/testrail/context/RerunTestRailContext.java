@@ -1,6 +1,7 @@
 package de.nexible.gauge.testrail.context;
 
 import com.gurock.testrail.APIClient;
+import de.nexible.gauge.testrail.config.TestRailContext;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -12,7 +13,7 @@ import java.util.logging.Logger;
  *
  * @author ajoecker
  */
-public class RerunTestRailContext implements TestRailContext {
+public class RerunTestRailContext implements TestRailReportContext {
     private static final Logger logger = Logger.getLogger(RerunTestRailContext.class.getName());
     private final Properties properties;
 

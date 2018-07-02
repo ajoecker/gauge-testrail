@@ -3,12 +3,12 @@ package de.nexible.gauge.testrail;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.gurock.testrail.APIException;
-import de.nexible.gauge.testrail.context.GaugeContext;
-import de.nexible.gauge.testrail.context.GaugeDefaultContext;
-import de.nexible.gauge.testrail.context.RerunGaugeContext;
+import de.nexible.gauge.testrail.context.GaugeReportContext;
+import de.nexible.gauge.testrail.context.GaugeDefaultReportContext;
+import de.nexible.gauge.testrail.context.RerunGaugeReportContext;
 import de.nexible.gauge.testrail.context.RerunTestRailContext;
-import de.nexible.gauge.testrail.context.TestRailContext;
-import de.nexible.gauge.testrail.context.TestRailDefaultContext;
+import de.nexible.gauge.testrail.context.TestRailReportContext;
+import de.nexible.gauge.testrail.context.TestRailReportDefaultContext;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -42,9 +42,9 @@ public class GaugeTestRail {
     }
 
     private void run() throws IOException, APIException {
-        GaugeContext gaugeContext = getGaugeContext();
+        GaugeReportContext gaugeContext = getGaugeContext();
         GaugeTestRailLogger.initializeLogger(gaugeContext);
-        TestRailContext testRailContext = getTestRailContext();
+        TestRailReportContext testRailContext = getTestRailContext();
 
         GaugeLastRun gaugeLastRun = new GaugeLastRun(gaugeContext, testRailContext);
         TestRailHandler testRailHandler = new TestRailDefaultHandler(testRailContext);
@@ -58,7 +58,7 @@ public class GaugeTestRail {
         }
     }
 
-    private TestRailContext getTestRailContext() throws IOException {
+    private TestRailReportContext getTestRailContext() throws IOException {
         if (!"".equals(testRailProperties)) {
             Properties properties = new Properties();
             try (InputStream ins = Files.newInputStream(Paths.get(testRailProperties))) {
@@ -66,15 +66,15 @@ public class GaugeTestRail {
             }
             return new RerunTestRailContext(properties);
         } else {
-            return new TestRailDefaultContext();
+            return new TestRailReportDefaultContext();
         }
     }
 
-    private GaugeContext getGaugeContext() {
+    private GaugeReportContext getGaugeContext() {
         if (!"".equals(lastRunFile)) {
-            return new RerunGaugeContext();
+            return new RerunGaugeReportContext();
         } else {
-            return new GaugeDefaultContext();
+            return new GaugeDefaultReportContext();
         }
     }
 

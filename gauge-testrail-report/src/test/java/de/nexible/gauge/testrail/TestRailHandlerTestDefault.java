@@ -3,7 +3,8 @@ package de.nexible.gauge.testrail;
 import com.gurock.testrail.APIClient;
 import com.gurock.testrail.APIException;
 import com.thoughtworks.gauge.Spec;
-import de.nexible.gauge.testrail.context.TestRailDefaultContext;
+import de.nexible.gauge.testrail.context.TestRailReportContext;
+import de.nexible.gauge.testrail.context.TestRailReportDefaultContext;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,11 +22,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 
 public class TestRailHandlerTestDefault {
-    private TestDefaultContext testRailContext;
+    private TestReportDefaultContext testRailContext;
 
     @BeforeEach
     public void setup() {
-        testRailContext = new TestDefaultContext();
+        testRailContext = new TestReportDefaultContext();
         testRailContext.testrunId = "5";
     }
 
@@ -87,7 +88,7 @@ public class TestRailHandlerTestDefault {
         new TestRailDefaultHandler(testRailContext).handle(suiteResult(scenario));
     }
 
-    private static final class TestDefaultContext extends TestRailDefaultContext {
+    private static final class TestReportDefaultContext extends TestRailReportDefaultContext {
         private String testrunId;
         private APIClient apiClient = mock(APIClient.class);
 

@@ -15,6 +15,14 @@
         <plugin.output.name>testrail-sync</plugin.output.name>
     </properties>
 
+    <dependencies>
+        <dependency>
+            <groupId>de.nexible.end2end.gauge-testrail</groupId>
+            <artifactId>gauge-testrail-config</artifactId>
+            <version>0.0.2-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+
     <build>
         <finalName>${plugin.output.name}</finalName>
         <plugins>

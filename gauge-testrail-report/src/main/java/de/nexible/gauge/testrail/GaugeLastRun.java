@@ -1,8 +1,8 @@
 package de.nexible.gauge.testrail;
 
 import com.thoughtworks.gauge.Spec;
-import de.nexible.gauge.testrail.context.GaugeContext;
-import de.nexible.gauge.testrail.context.TestRailContext;
+import de.nexible.gauge.testrail.context.GaugeReportContext;
+import de.nexible.gauge.testrail.context.TestRailReportContext;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,10 +23,10 @@ import static java.nio.file.Paths.get;
  */
 public class GaugeLastRun {
     private static final Logger logger = Logger.getLogger(GaugeLastRun.class.getName());
-    private GaugeContext gaugeContext;
-    private TestRailContext testRailContext;
+    private GaugeReportContext gaugeContext;
+    private TestRailReportContext testRailContext;
 
-    public GaugeLastRun(GaugeContext gaugeContext, TestRailContext testRailContext) {
+    public GaugeLastRun(GaugeReportContext gaugeContext, TestRailReportContext testRailContext) {
         this.gaugeContext = gaugeContext;
         this.testRailContext = testRailContext;
     }

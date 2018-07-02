@@ -1,6 +1,8 @@
 package de.nexible.gauge.testrail.context;
 
 import com.gurock.testrail.APIClient;
+import de.nexible.gauge.testrail.config.TestRailContext;
+import de.nexible.gauge.testrail.config.TestRailDefaultContext;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -13,8 +15,8 @@ import java.util.logging.Logger;
  *
  * @author ajoecker
  */
-public class TestRailDefaultContext implements TestRailContext {
-    private static final Logger logger = Logger.getLogger(TestRailDefaultContext.class.getName());
+public class TestRailReportDefaultContext extends TestRailDefaultContext implements  TestRailReportContext {
+    private static final Logger logger = Logger.getLogger(TestRailReportDefaultContext.class.getName());
 
     @Override
     public APIClient getTestRailClient() {

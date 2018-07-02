@@ -8,16 +8,16 @@ import java.util.List;
 
 public class GaugeConnector {
     private static final String LOCALHOST = "127.0.0.1";
-    private GaugeStepRetriever gaugeStepRetriever;
+    private GaugeSpecRetriever gaugeSpecRetriever;
 
-    public GaugeConnector(GaugeStepRetriever gaugeStepRetriever) {
-        this.gaugeStepRetriever = gaugeStepRetriever;
+    public GaugeConnector(GaugeSpecRetriever gaugeSpecRetriever) {
+        this.gaugeSpecRetriever = gaugeSpecRetriever;
     }
 
     public List<Spec.ProtoSpec> connect() throws IOException {
         Socket gaugeSocket = openSocket(Integer.parseInt(System.getenv("GAUGE_API_PORT")));
         try {
-            return gaugeStepRetriever.fetchAllSteps(gaugeSocket);
+            return gaugeSpecRetriever.fetchAllSpecs(gaugeSocket);
         }
         finally {
             gaugeSocket.close();

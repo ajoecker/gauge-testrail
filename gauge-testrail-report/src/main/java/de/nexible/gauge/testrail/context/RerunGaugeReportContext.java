@@ -4,11 +4,11 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 /**
- * A {@link GaugeContext} that is used, when the plugin is rerun with a persisted gauge test suite result.
+ * A {@link GaugeReportContext} that is used, when the plugin is rerun with a persisted gauge test suite result.
  *
  * @author ajoecker
  */
-public class RerunGaugeContext implements GaugeContext {
+public class RerunGaugeReportContext implements GaugeReportContext {
     @Override
     public String getGaugeProjectRoot() {
         // the rerun is always run two levels below the gauge project

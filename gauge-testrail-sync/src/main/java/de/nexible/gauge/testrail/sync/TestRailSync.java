@@ -1,59 +1,57 @@
 package de.nexible.gauge.testrail.sync;
 
+import com.gurock.testrail.APIException;
 import com.thoughtworks.gauge.Spec;
+import de.nexible.gauge.testrail.config.GaugeDefaultContext;
 import de.nexible.gauge.testrail.sync.gauge.GaugeConnector;
-import de.nexible.gauge.testrail.sync.gauge.GaugeStepRetriever;
+import de.nexible.gauge.testrail.sync.gauge.GaugeSpecRetriever;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class TestRailSync {
     private static final Pattern TESTRAIL_PATTERN = Pattern.compile("^[Cc]\\d+$");
+    private final SpecModifier specModifier;
+    private GaugeConnector gaugeConnector;
+    private TestRailConnector testRailConnector;
 
-    public static void main(String[] args) throws IOException {
-        new TestRailSync().start();
+    public TestRailSync(SpecModifier specModifier, GaugeConnector gaugeConnector, TestRailConnector testRailConnector) {
+        this.specModifier = specModifier;
+        this.gaugeConnector = gaugeConnector;
+        this.testRailConnector = testRailConnector;
     }
 
-    private void start() throws IOException {
-        GaugeConnector gaugeConnector = new GaugeConnector(new GaugeStepRetriever());
-        sync(gaugeConnector.connect());
+    public static void main(String[] args) throws IOException, APIException {
+        TestRailConnector testRailConnector = new TestRailConnector(new TestRailSyncDefaultContext(), new GaugeDefaultContext());
+        GaugeConnector gaugeConnector = new GaugeConnector(new GaugeSpecRetriever());
+        new TestRailSync(new SpecModifier(), gaugeConnector, testRailConnector).start();
     }
 
-    private void sync(List<Spec.ProtoSpec> protoSpecList) throws IOException {
-        // how to persist a changed Spec.ProtoSpec ?
-        for (Spec.ProtoSpec spec : protoSpecList) {
-            String specFileName = spec.getFileName();
-            System.out.println("ORIGINAL NAME: " + specFileName);
-            String before = specFileName.substring(0, specFileName.lastIndexOf('.'));
-            Path path = Paths.get(before + "_01" + specFileName.substring(specFileName.lastIndexOf('.')));
-            try (OutputStream os = Files.newOutputStream(path)) {
-                os.write(spec.toString().getBytes());
-            }
-        }
+    private void start() throws IOException, APIException {
+        List<SpecModification> modifications = sync(gaugeConnector.connect());
+        testRailConnector.upload(modifications);
+        specModifier.persistChanges(modifications);
     }
 
-    private void syncScenario(String specFileName, Spec.ProtoScenario scenario) {
-        Optional<String> anyTestRailTag = scenario.getTagsList().stream().filter(this::isTestRailTag).findAny();
-        if (anyTestRailTag.isPresent()) {
-            // already a tag
-            // update ?
-            System.out.println(scenario.getScenarioHeading() + " has already a TestRail tag " + anyTestRailTag.get());
-        } else {
-            // no tag
-            // upload to TestRail
-            // tag scenario
-            System.out.println(scenario.getScenarioHeading() + " has NO testrail tag");
-            System.out.println("So send it to " + System.getenv("testrail.url"));
-        }
+    private List<SpecModification> sync(List<Spec.ProtoSpec> protoSpecList) {
+        return protoSpecList.stream().map(this::syncSpec).collect(Collectors.toList());
+    }
+
+    private SpecModification syncSpec(Spec.ProtoSpec spec) {
+        return spec.getItemsList().stream()
+                .filter(item -> item.getItemType() == Spec.ProtoItem.ItemType.Scenario)
+                .map(item -> item.getScenario())
+                .filter(scenario -> scenario.getTagsList().stream().filter(this::isTestRailTag).findAny().isPresent())
+                .filter(Objects::nonNull)
+                .collect(() -> new SpecModification(spec.getFileName()), SpecModification::add, (x, y) -> {
+                });
     }
 
     private boolean isTestRailTag(String s) {
         return TESTRAIL_PATTERN.matcher(s).find();
     }
+
 }

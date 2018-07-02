@@ -12,51 +12,51 @@ import java.net.Socket;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class GaugeStepRetriever {
-    public List<Spec.ProtoSpec> fetchAllSteps(Socket gaugeSocket) throws IOException {
-        Api.APIMessage message = getStepRequest();
-        Api.APIMessage response = getAPIResponse(message, gaugeSocket);
+import static com.thoughtworks.gauge.Api.APIMessage.newBuilder;
+
+public class GaugeSpecRetriever {
+    public List<Spec.ProtoSpec> fetchAllSpecs(Socket gaugeSocket) throws IOException {
+        Api.APIMessage response = getAPIResponse(getSpecApiMessage(), gaugeSocket);
         Api.SpecsResponse specsResponse = response.getSpecsResponse();
         return specsResponse.getDetailsList().stream().map(Api.SpecsResponse.SpecDetail::getSpec).collect(Collectors.toList());
     }
 
-    private Api.APIMessage getStepRequest() {
+    private Api.APIMessage getSpecApiMessage() {
         Api.SpecsRequest spec = Api.SpecsRequest.newBuilder().build();
-        return Api.APIMessage.newBuilder()
-                .setMessageType(Api.APIMessage.APIMessageType.SpecsRequest)
+        return newBuilder().setMessageType(Api.APIMessage.APIMessageType.SpecsRequest)
                 .setMessageId(2)
                 .setSpecsRequest(spec)
                 .build();
     }
 
     private Api.APIMessage getAPIResponse(Api.APIMessage message, Socket gaugeSocket) throws IOException {
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        CodedOutputStream cos = CodedOutputStream.newInstance(stream);
-        byte[] bytes = message.toByteArray();
-        cos.writeRawVarint64(bytes.length);
-        cos.flush();
-        stream.write(bytes);
-        synchronized (gaugeSocket) {
-            gaugeSocket.getOutputStream().write(stream.toByteArray());
-            gaugeSocket.getOutputStream().flush();
+        try (ByteArrayOutputStream stream = new ByteArrayOutputStream()) {
+            CodedOutputStream cos = CodedOutputStream.newInstance(stream);
+            byte[] bytes = message.toByteArray();
+            cos.writeRawVarint64(bytes.length);
+            cos.flush();
+            stream.write(bytes);
+            synchronized (gaugeSocket) {
+                gaugeSocket.getOutputStream().write(stream.toByteArray());
+                gaugeSocket.getOutputStream().flush();
 
-            InputStream remoteStream = gaugeSocket.getInputStream();
-            MessageLength messageLength = getMessageLength(remoteStream);
-            bytes = toBytes(messageLength);
+                InputStream remoteStream = gaugeSocket.getInputStream();
+                bytes = toBytes(getMessageLength(remoteStream));
+            }
+            return Api.APIMessage.parseFrom(bytes);
         }
-        Api.APIMessage apiMessage = Api.APIMessage.parseFrom(bytes);
-        return apiMessage;
     }
 
     private static byte[] toBytes(MessageLength messageLength) throws IOException {
         long messageSize = messageLength.getLength();
         CodedInputStream stream = messageLength.getRemainingStream();
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        for (int i = 0; i < messageSize; i++) {
-            outputStream.write(stream.readRawByte());
-        }
+        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+            for (int i = 0; i < messageSize; i++) {
+                outputStream.write(stream.readRawByte());
+            }
 
-        return outputStream.toByteArray();
+            return outputStream.toByteArray();
+        }
     }
 
 

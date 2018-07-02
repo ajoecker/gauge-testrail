@@ -10,6 +10,7 @@
     <modules>
         <module>gauge-testrail-sync</module>
         <module>gauge-testrail-report</module>
+        <module>gauge-testrail-config</module>
     </modules>
     <packaging>pom</packaging>
 
@@ -35,5 +36,24 @@
             <artifactId>jcommander</artifactId>
             <version>1.72</version>
         </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>5.2.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>1.10.19</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <version>3.10.0</version>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
 </project>
