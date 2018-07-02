@@ -16,10 +16,10 @@ public class GaugeModificationFinder {
     }
 
     public List<SpecModifications> findModifications() throws IOException {
-        return gaugeConnector.getSpecs().stream().map(this::syncSpec).filter(SpecModifications::hasModifications).collect(Collectors.toList());
+        return gaugeConnector.getSpecs().stream().map(this::getSpecModifications).filter(SpecModifications::hasModifications).collect(Collectors.toList());
     }
 
-    private SpecModifications syncSpec(Spec.ProtoSpec spec) {
+    private SpecModifications getSpecModifications(Spec.ProtoSpec spec) {
         return spec.getItemsList().stream()
                 .filter(item -> item.getItemType() == Spec.ProtoItem.ItemType.Scenario)
                 .map(item -> item.getScenario())

@@ -10,6 +10,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import static java.util.Optional.empty;
+import static java.util.Optional.of;
+
 /**
  * A data class to represent a modification of a scenario
  *
@@ -55,9 +58,9 @@ public class SpecModifications {
     public Optional<String> isRelevantScenario(String line) {
         if (line.startsWith("##")) {
             String modified = modifyLine(line);
-            return scenarioHeadingToTag.containsKey(modified) ? Optional.of(modified): Optional.empty();
+            return scenarioHeadingToTag.containsKey(modified) ? of(modified): empty();
         }
-        return Optional.empty();
+        return empty();
     }
 
     private String modifyLine(String line) {

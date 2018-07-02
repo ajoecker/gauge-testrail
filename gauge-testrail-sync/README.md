@@ -47,3 +47,10 @@ __Attention__ if the gauge project, the plugin is running on, is under version c
 
 ### Important notice
 The specifications and scenarios __must__ be written with the `#` or `##`, respectively !
+
+### TestRail configuration
+the plugin assumes, that a template is configured in TestRail. This template can be any template, as long as it does not require any fields to be set,
+except the title
+If in the template a fields is configured as `Link`, to point to the spec file, the property `testrail.gauge.spec.label` must be defined, which contains
+the database name of that label. Besides that, `testrail.gauge.link` must be set, that contains the prefix of the spec file link (e.g. github link to the
+gauge project)

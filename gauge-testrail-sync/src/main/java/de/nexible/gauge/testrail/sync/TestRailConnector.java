@@ -23,22 +23,31 @@ public class TestRailConnector {
 
     public void upload(List<SpecModifications> modifications) throws IOException, APIException {
         APIClient testRailClient = testRailContext.getTestRailClient();
+
         for (SpecModifications specModifications : modifications) {
             Collection<String> scenarioModifications = specModifications.getHeadings();
             for (String mod : scenarioModifications) {
-                JSONObject obj = new JSONObject();
-                obj.put("title", mod);
-                obj.put("template_id", testRailContext.getGaugeTemplateId());
-                String specLink = testRailContext.getSpecLink();
-                if (!"".equals(specLink)) {
-                    Path specFile = specModifications.getSpecFile();
-                    Path projectRoot = Paths.get(gaugeContext.getGaugeProjectRoot());
-                    String total = specLink + projectRoot.relativize(specFile);
-                    obj.put("custom_" + testRailContext.getSpecFieldLabel(), total);
-                }
-                JSONObject post = (JSONObject) testRailClient.sendPost("add_case/" + testRailContext.getSectionId(), obj);
-                specModifications.setTag(mod, "C" + post.get("id"));
+                JSONObject result = send(testRailClient, createJSONObject(specModifications, mod));
+                specModifications.setTag(mod, "C" + result.get("id"));
             }
         }
+    }
+
+    private JSONObject send(APIClient testRailClient, JSONObject obj) throws IOException, APIException {
+        return (JSONObject) testRailClient.sendPost("add_case/" + testRailContext.getSectionId(), obj);
+    }
+
+    private JSONObject createJSONObject(SpecModifications specModifications, String mod) {
+        JSONObject obj = new JSONObject();
+        obj.put("title", mod);
+        obj.put("template_id", testRailContext.getGaugeTemplateId());
+        String specLink = testRailContext.getSpecLink();
+        if (!"".equals(specLink)) {
+            Path specFile = specModifications.getSpecFile();
+            Path projectRoot = Paths.get(gaugeContext.getGaugeProjectRoot());
+            String total = specLink + projectRoot.relativize(specFile);
+            obj.put("custom_" + testRailContext.getSpecFieldLabel(), total);
+        }
+        return obj;
     }
 }
