@@ -54,3 +54,7 @@ except the title
 If in the template a fields is configured as `Link`, to point to the spec file, the property `testrail.gauge.spec.label` must be defined, which contains
 the database name of that label. Besides that, `testrail.gauge.link` must be set, that contains the prefix of the spec file link (e.g. github link to the
 gauge project)
+
+### Todo
+* Adding reference option to upload to TestRail
+* Better section handling than in properties file, as different test cases might end up in different sections
