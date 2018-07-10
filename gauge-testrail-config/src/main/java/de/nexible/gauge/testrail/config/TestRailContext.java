@@ -17,4 +17,6 @@ public interface TestRailContext {
      * @return
      */
     APIClient getTestRailClient();
+
+    boolean isDryRun();
 }

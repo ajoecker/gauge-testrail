@@ -1,6 +1,5 @@
 package de.nexible.gauge.testrail.context;
 
-import com.gurock.testrail.APIClient;
 import de.nexible.gauge.testrail.config.TestRailContext;
 import de.nexible.gauge.testrail.config.TestRailDefaultContext;
 
@@ -8,28 +7,13 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.logging.Logger;
 
 /**
  * A {@link TestRailContext} that is used when the plugin runs inside of gauge test run
  *
  * @author ajoecker
  */
-public class TestRailReportDefaultContext extends TestRailDefaultContext implements  TestRailReportContext {
-    private static final Logger logger = Logger.getLogger(TestRailReportDefaultContext.class.getName());
-
-    @Override
-    public APIClient getTestRailClient() {
-        String url = System.getenv("testrail.url");
-        String token = System.getenv("testrail.token");
-        String user = System.getenv("testrail.user");
-        logger.info(() -> "connecting to testrail instance " + url + " as " + user + " / " + token);
-        APIClient client = new APIClient(url);
-        client.setPassword(token);
-        client.setUser(user);
-        return client;
-    }
-
+public class TestRailReportDefaultContext extends TestRailDefaultContext implements TestRailReportContext {
     @Override
     public String getTestRailRunId() {
         return System.getenv("testrail.run.id");

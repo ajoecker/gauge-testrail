@@ -61,8 +61,13 @@ public final class TestRailDefaultHandler implements TestRailHandler {
             return;
         }
         logger.info(() -> "sending results to testrail for run #" + testRailRunId);
-        testRailContext.getTestRailClient().sendPost("add_results_for_cases/" + testRailRunId, jsonObject);
-        logger.info(() -> "results have been sent");
+        if (!testRailContext.isDryRun()) {
+            testRailContext.getTestRailClient().sendPost("add_results_for_cases/" + testRailRunId, jsonObject);
+            logger.info(() -> "results have been sent");
+        } else {
+            logger.info(() -> "send to TestRail: " + jsonObject);
+            logger.info(() -> "dry run started, so no results are posted");
+        }
     }
 
     private JSONObject convertToJson(List<Spec.ProtoScenario> scenarios) {
@@ -75,7 +80,6 @@ public final class TestRailDefaultHandler implements TestRailHandler {
 
         if (!a.isEmpty()) {
             jsonObject.put("results", a);
-            logger.info(() -> "send to TestRail: " + jsonObject);
         }
         return jsonObject;
     }

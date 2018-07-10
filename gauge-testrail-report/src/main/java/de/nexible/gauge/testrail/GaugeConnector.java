@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 
 import static java.lang.Integer.parseInt;
 import static java.lang.System.getenv;
+import static java.lang.System.setOut;
 
 /**
  * The {@link GaugeConnector} opens a socket to listen to gauge events and propagates the event SuiteExecutionResult to {@link TestRailHandler}
@@ -74,6 +75,8 @@ public class GaugeConnector {
         logger.info(() -> "retrieved suite execution result message");
         Messages.SuiteExecutionResult executionResult = message.getSuiteExecutionResult();
         Spec.ProtoSuiteResult suiteResult = executionResult.getSuiteResult();
+        System.out.println("TOTAL MESSAGES POST: "+ suiteResult.getPostHookMessagesList());
+        System.out.println("TOTAL MESSAGES PRE: "+ suiteResult.getPreHookMessagesList());
         gaugeLastRun.persistRun(suiteResult);
         testRailHandler.handle(suiteResult);
     }

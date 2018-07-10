@@ -41,4 +41,9 @@ public class RerunTestRailContext implements TestRailReportContext {
         client.setUser(user);
         return client;
     }
+
+    @Override
+    public boolean isDryRun() {
+        return false;
+    }
 }

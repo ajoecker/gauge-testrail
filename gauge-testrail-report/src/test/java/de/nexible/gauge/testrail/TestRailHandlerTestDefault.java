@@ -93,10 +93,6 @@ public class TestRailHandlerTestDefault {
         private APIClient apiClient = mock(APIClient.class);
 
 
-        @Override
-        public APIClient getTestRailClient() {
-            return apiClient;
-        }
 
 
         @Override

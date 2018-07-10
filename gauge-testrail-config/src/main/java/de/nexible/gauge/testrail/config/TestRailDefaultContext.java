@@ -8,7 +8,7 @@ public class TestRailDefaultContext implements TestRailContext {
     private static final Logger logger = Logger.getLogger(TestRailDefaultContext.class.getName());
 
     @Override
-    public final APIClient getTestRailClient() {
+    public APIClient getTestRailClient() {
         String url = System.getenv("testrail.url");
         String token = System.getenv("testrail.token");
         String user = System.getenv("testrail.user");
@@ -17,5 +17,14 @@ public class TestRailDefaultContext implements TestRailContext {
         client.setPassword(token);
         client.setUser(user);
         return client;
+    }
+
+    @Override
+    public boolean isDryRun() {
+        String dryRun = System.getenv("testrail.dryRun");
+        if (!"".equals(dryRun)) {
+           return Boolean.parseBoolean(dryRun.trim());
+        }
+        return false;
     }
 }

@@ -38,7 +38,7 @@ public class GaugeLastRun {
      * @throws IOException
      */
     public void persistRun(Spec.ProtoSuiteResult suiteResult) throws IOException {
-        if (gaugeContext.isRerun()) {
+        if (gaugeContext.isRerun() || testRailContext.isDryRun()) {
             return;
         }
         Path lastRunFilePath = persistGaugeResult(suiteResult);
