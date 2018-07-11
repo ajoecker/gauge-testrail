@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -25,7 +26,7 @@ import static de.nexible.gauge.testrail.model.TestResult.TestResultBuilder.newTe
  *
  * @author ajoecker
  */
-public final class TestRailDefaultHandler implements TestRailHandler {
+public final class TestRailDefaultHandler implements GaugeResultListener {
     private static final Logger logger = Logger.getLogger(TestRailDefaultHandler.class.getName());
     // test-friendly
     static final String UPLOAD_TIME = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss"));
@@ -45,7 +46,7 @@ public final class TestRailDefaultHandler implements TestRailHandler {
     }
 
     @Override
-    public void handle(Spec.ProtoSuiteResult suiteResult) throws IOException, APIException {
+    public void gaugeResult(Spec.ProtoSuiteResult suiteResult) {
         List<Spec.ProtoScenario> scenarios = retrieveScenarios(suiteResult);
         String testRailRunId = testRailContext.getTestRailRunId();
 
@@ -62,7 +63,11 @@ public final class TestRailDefaultHandler implements TestRailHandler {
         }
         logger.info(() -> "sending results to testrail for run #" + testRailRunId);
         if (!testRailContext.isDryRun()) {
-            testRailContext.getTestRailClient().sendPost("add_results_for_cases/" + testRailRunId, jsonObject);
+            try {
+                testRailContext.getTestRailClient().sendPost("add_results_for_cases/" + testRailRunId, jsonObject);
+            } catch (IOException | APIException e) {
+                logger.log(Level.WARNING, e, () -> "Failed to send to TestRail.");
+            }
             logger.info(() -> "results have been sent");
         } else {
             logger.info(() -> "send to TestRail: " + jsonObject);

@@ -84,8 +84,8 @@ public class TestRailHandlerTestDefault {
         return expected;
     }
 
-    private void handle(Spec.ProtoScenario scenario) throws IOException, APIException {
-        new TestRailDefaultHandler(testRailContext).handle(suiteResult(scenario));
+    private void handle(Spec.ProtoScenario scenario) {
+        new TestRailDefaultHandler(testRailContext).gaugeResult(suiteResult(scenario));
     }
 
     private static final class TestReportDefaultContext extends TestRailReportDefaultContext {

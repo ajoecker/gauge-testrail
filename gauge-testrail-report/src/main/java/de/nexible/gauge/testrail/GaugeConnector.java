@@ -6,6 +6,8 @@ import com.thoughtworks.gauge.Spec;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 
 import static java.lang.Integer.parseInt;
@@ -21,13 +23,11 @@ public class GaugeConnector {
     private static Logger logger = Logger.getLogger(GaugeConnector.class.getName());
     private static final String LOCALHOST = "127.0.0.1";
 
-    private final TestRailHandler testRailHandler;
-    private final GaugeLastRun gaugeLastRun;
     private Socket socket;
+    private List<GaugeResultListener> gaugeResultListeners = new ArrayList<>();
 
-    public GaugeConnector(TestRailHandler testRailHandler, GaugeLastRun gaugeLastRun) {
-        this.testRailHandler = testRailHandler;
-        this.gaugeLastRun = gaugeLastRun;
+    void addGaugeResultListener(GaugeResultListener gaugeResultListener) {
+        this.gaugeResultListeners.add(gaugeResultListener);
     }
 
     /**
@@ -52,7 +52,7 @@ public class GaugeConnector {
      * @throws IOException
      * @throws APIException
      */
-    public void listen() throws IOException, APIException {
+    public void listen() throws IOException {
         if (socket == null) {
             logger.warning(() -> "no socket accessible");
             return;
@@ -71,13 +71,10 @@ public class GaugeConnector {
         }
     }
 
-    private void handleSuiteResult(Messages.Message message) throws IOException, APIException {
+    private void handleSuiteResult(Messages.Message message) {
         logger.info(() -> "retrieved suite execution result message");
         Messages.SuiteExecutionResult executionResult = message.getSuiteExecutionResult();
         Spec.ProtoSuiteResult suiteResult = executionResult.getSuiteResult();
-        System.out.println("TOTAL MESSAGES POST: "+ suiteResult.getPostHookMessagesList());
-        System.out.println("TOTAL MESSAGES PRE: "+ suiteResult.getPreHookMessagesList());
-        gaugeLastRun.persistRun(suiteResult);
-        testRailHandler.handle(suiteResult);
+        gaugeResultListeners.stream().forEach(l -> l.gaugeResult(suiteResult));
     }
 }

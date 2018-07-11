@@ -47,12 +47,14 @@ public class GaugeTestRail {
         TestRailReportContext testRailContext = getTestRailContext();
 
         GaugeLastRun gaugeLastRun = new GaugeLastRun(gaugeContext, testRailContext);
-        TestRailHandler testRailHandler = new TestRailDefaultHandler(testRailContext);
+        GaugeResultListener testRailHandler = new TestRailDefaultHandler(testRailContext);
 
         if (gaugeContext.isRerun()) {
-            testRailHandler.handle(gaugeLastRun.recoverLastRun());
+            testRailHandler.gaugeResult(gaugeLastRun.recoverLastRun());
         } else {
-            GaugeConnector gaugeConnector = new GaugeConnector(testRailHandler, gaugeLastRun);
+            GaugeConnector gaugeConnector = new GaugeConnector();
+            gaugeConnector.addGaugeResultListener(gaugeLastRun);
+            gaugeConnector.addGaugeResultListener(testRailHandler);
             gaugeConnector.connect();
             gaugeConnector.listen();
         }

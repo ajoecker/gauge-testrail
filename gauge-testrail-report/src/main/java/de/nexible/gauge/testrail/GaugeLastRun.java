@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static de.nexible.gauge.testrail.RecoveryWriter.forUnix;
@@ -21,7 +22,7 @@ import static java.nio.file.Paths.get;
  *
  * @author ajoecker
  */
-public class GaugeLastRun {
+public class GaugeLastRun implements GaugeResultListener {
     private static final Logger logger = Logger.getLogger(GaugeLastRun.class.getName());
     private GaugeReportContext gaugeContext;
     private TestRailReportContext testRailContext;
@@ -66,7 +67,7 @@ public class GaugeLastRun {
         return lastRunFilePath;
     }
 
-    private Path getLastRunFile() throws IOException {
+    private Path getLastRunFile() {
         return gaugeContext.getTestRailReportDir().resolve("last_run.json").normalize();
     }
 
@@ -81,6 +82,28 @@ public class GaugeLastRun {
         logger.info(() -> "recovering results from " + lastRunFilePath);
         try (InputStream ins = Files.newInputStream(lastRunFilePath)) {
             return Spec.ProtoSuiteResult.parseFrom(ins);
+        }
+    }
+
+    /**
+     * Persists the test results of a gauge run
+     *
+     * @param suiteResult
+     * @throws IOException
+     */
+    @Override
+    public void gaugeResult(Spec.ProtoSuiteResult suiteResult) {
+        if (gaugeContext.isRerun() || testRailContext.isDryRun()) {
+            return;
+        }
+        try {
+            Path lastRunFilePath = persistGaugeResult(suiteResult);
+            Path pluginJar = get(getProperty("user.dir"), "bin", "testrail.jar");
+            Path currentProperties = gaugeContext.getTestRailReportDir().resolve("testrail.properties").normalize();
+            testRailContext.dump(currentProperties);
+            createRecoveryFile(lastRunFilePath, pluginJar, currentProperties);
+        } catch (IOException e) {
+            logger.log(Level.WARNING, e, () -> "Failed to persist last run.");
         }
     }
 }
