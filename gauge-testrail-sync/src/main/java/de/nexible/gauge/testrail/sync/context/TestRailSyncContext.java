@@ -7,7 +7,7 @@ import de.nexible.gauge.testrail.config.TestRailContext;
  *
  * @author ajoecker
  */
-public interface TestRailSynContext extends TestRailContext {
+public interface TestRailSyncContext extends TestRailContext {
     /**
      * Returns the id of the gauge template in TestRail
      *
@@ -28,6 +28,8 @@ public interface TestRailSynContext extends TestRailContext {
      * @return
      */
     String getSectionId();
+
+    int projectId();
 
     /**
      * Returns the base link to the spec files in the gauge project

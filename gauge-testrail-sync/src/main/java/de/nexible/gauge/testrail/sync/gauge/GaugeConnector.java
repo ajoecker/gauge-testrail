@@ -1,11 +1,13 @@
 package de.nexible.gauge.testrail.sync.gauge;
 
 import com.thoughtworks.gauge.Spec;
-import de.nexible.gauge.testrail.sync.context.TestRailSynContext;
 
 import java.io.IOException;
 import java.net.Socket;
 import java.util.List;
+import java.util.function.Function;
+
+import static java.util.Collections.emptyList;
 
 /**
  * The {@link GaugeConnector} opens a socket to listen to gauge
@@ -14,17 +16,14 @@ import java.util.List;
  */
 public class GaugeConnector {
     private static final String LOCALHOST = "127.0.0.1";
-    private GaugeSpecRetriever gaugeSpecRetriever;
-    private TestRailSynContext testRailSynContext;
 
-    public GaugeConnector(GaugeSpecRetriever gaugeSpecRetriever, TestRailSynContext testRailSynContext) {
-        this.gaugeSpecRetriever = gaugeSpecRetriever;
-        this.testRailSynContext = testRailSynContext;
-    }
-
-    public List<Spec.ProtoSpec> getSpecs() throws IOException {
-        try (Socket gaugeSocket = openSocket(testRailSynContext.getGaugeApiPort())) {
-            return gaugeSpecRetriever.fetchAllSpecs(gaugeSocket);
+    public static List<Spec.ProtoSpec> getSpecs(Function<Socket, List<Spec.ProtoSpec>> protoListener, int apiPort)  {
+        try (Socket gaugeSocket = openSocket(apiPort)) {
+            return protoListener.apply(gaugeSocket);
+        }
+        catch (IOException e) {
+            // TODO logger
+            return emptyList();
         }
     }
 

@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.thoughtworks.gauge.Api.APIMessage.newBuilder;
+import static java.util.Collections.emptyList;
 
 /**
  * The {@link GaugeSpecRetriever} fetches all specs from a Gauge report
@@ -27,13 +28,19 @@ public class GaugeSpecRetriever {
      * @return
      * @throws IOException
      */
-    public List<Spec.ProtoSpec> fetchAllSpecs(Socket gaugeSocket) throws IOException {
-        Api.APIMessage response = getAPIResponse(getSpecApiMessage(), gaugeSocket);
-        Api.SpecsResponse specsResponse = response.getSpecsResponse();
-        return specsResponse.getDetailsList().stream().map(Api.SpecsResponse.SpecDetail::getSpec).collect(Collectors.toList());
+    public static List<Spec.ProtoSpec> fetchAllSpecs(Socket gaugeSocket) {
+        try{
+            Api.APIMessage response = getAPIResponse(getSpecApiMessage(), gaugeSocket);
+            Api.SpecsResponse specsResponse = response.getSpecsResponse();
+            return specsResponse.getDetailsList().stream().map(Api.SpecsResponse.SpecDetail::getSpec).collect(Collectors.toList());
+        }
+        catch (IOException e) {
+            // TODO logger
+            return emptyList();
+        }
     }
 
-    private Api.APIMessage getSpecApiMessage() {
+    private static Api.APIMessage getSpecApiMessage() {
         Api.SpecsRequest spec = Api.SpecsRequest.newBuilder().build();
         return newBuilder().setMessageType(Api.APIMessage.APIMessageType.SpecsRequest)
                 .setMessageId(2)
@@ -41,7 +48,7 @@ public class GaugeSpecRetriever {
                 .build();
     }
 
-    private Api.APIMessage getAPIResponse(Api.APIMessage message, Socket gaugeSocket) throws IOException {
+    private static Api.APIMessage getAPIResponse(Api.APIMessage message, Socket gaugeSocket) throws IOException {
         try (ByteArrayOutputStream stream = new ByteArrayOutputStream()) {
             CodedOutputStream cos = CodedOutputStream.newInstance(stream);
             byte[] bytes = message.toByteArray();

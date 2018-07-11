@@ -6,14 +6,19 @@ import static java.lang.Integer.parseInt;
 import static java.lang.System.getenv;
 
 /**
- * A {@link TestRailSynContext} that is used when the plugin runs inside of gauge test run
+ * A {@link TestRailSyncContext} that is used when the plugin runs inside of gauge test run
  *
  * @author ajoecker
  */
-public class TestRailSyncDefaultContext extends TestRailDefaultContext implements TestRailSynContext {
+public class TestRailSyncDefaultContext extends TestRailDefaultContext implements TestRailSyncContext {
     @Override
     public int getGaugeApiPort() {
         return parseInt(getenv("GAUGE_API_PORT"));
+    }
+
+    @Override
+    public int projectId() {
+        return parseInt(getenv("testrail.project"));
     }
 
     @Override

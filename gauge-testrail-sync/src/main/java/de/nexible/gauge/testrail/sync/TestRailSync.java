@@ -1,35 +1,50 @@
 package de.nexible.gauge.testrail.sync;
 
-import com.gurock.testrail.APIException;
 import de.nexible.gauge.testrail.config.GaugeDefaultContext;
+import de.nexible.gauge.testrail.sync.context.TestRailSyncContext;
 import de.nexible.gauge.testrail.sync.context.TestRailSyncDefaultContext;
 import de.nexible.gauge.testrail.sync.gauge.GaugeConnector;
 import de.nexible.gauge.testrail.sync.gauge.GaugeSpecRetriever;
+import de.nexible.gauge.testrail.sync.model.GaugeSpec;
+import de.nexible.gauge.testrail.sync.sync.SpecModifier;
+import de.nexible.gauge.testrail.sync.sync.Sync;
+import de.nexible.gauge.testrail.sync.sync.TestRailCaseSync;
+import de.nexible.gauge.testrail.sync.sync.TestRailSectionSync;
 
-import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
-public class TestRailSync {
-    private final SpecModifier specModifier;
-    private TestRailConnector testRailConnector;
-    private GaugeModificationFinder gaugeModificationFinder;
+import static de.nexible.gauge.testrail.sync.GaugeSpecRetrieval.retrieveSpecs;
 
-    public TestRailSync(SpecModifier specModifier, TestRailConnector testRailConnector, GaugeModificationFinder gaugeModificationFinder) {
-        this.specModifier = specModifier;
-        this.testRailConnector = testRailConnector;
-        this.gaugeModificationFinder = gaugeModificationFinder;
+public class TestRailSync implements  Sync {
+    private final List<Sync> syncs;
+
+    public TestRailSync(List<Sync> syncs) {
+        this.syncs = syncs;
     }
 
-    public static void main(String[] args) throws IOException, APIException {
-        TestRailSyncDefaultContext testRailContext = new TestRailSyncDefaultContext();
-        TestRailConnector testRailConnector = new TestRailConnector(testRailContext, new GaugeDefaultContext());
-        GaugeConnector gaugeConnector = new GaugeConnector(new GaugeSpecRetriever(), testRailContext);
-        new TestRailSync(new SpecModifier(), testRailConnector, new GaugeModificationFinder(gaugeConnector)).start();
+    public static void main(String[] args) {
+        TestRailSyncContext testRailContext = new TestRailSyncDefaultContext();
+        List<GaugeSpec> specs = getSpecs(testRailContext);
+        new TestRailSync(syncs(testRailContext)).sync(specs);
     }
 
-    private void start() throws IOException, APIException {
-        List<SpecModifications> modifications = gaugeModificationFinder.findModifications();
-        testRailConnector.upload(modifications);
-        specModifier.persistChanges(modifications);
+    private static List<GaugeSpec> getSpecs(TestRailSyncContext testRailContext) {
+        return retrieveSpecs(GaugeConnector.getSpecs(GaugeSpecRetriever::fetchAllSpecs, testRailContext.getGaugeApiPort()));
+    }
+
+    private static List<Sync> syncs(TestRailSyncContext testRailContext) {
+        TestRailSectionSync testRailSectionSync = new TestRailSectionSync(testRailContext);
+        TestRailCaseSync testRailCaseSync = new TestRailCaseSync(testRailContext, new GaugeDefaultContext());
+        SpecModifier specModifier = new SpecModifier();
+        return Arrays.asList(testRailSectionSync, testRailCaseSync, specModifier);
+    }
+
+    @Override
+    public List<GaugeSpec> sync(List<GaugeSpec> specData) {
+        for (Sync sync : syncs) {
+            specData = sync.sync(specData);
+        }
+        return specData;
     }
 }
