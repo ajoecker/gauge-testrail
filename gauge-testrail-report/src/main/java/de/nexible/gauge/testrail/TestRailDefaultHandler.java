@@ -2,7 +2,7 @@ package de.nexible.gauge.testrail;
 
 import com.gurock.testrail.APIException;
 import com.thoughtworks.gauge.Spec;
-import de.nexible.gauge.testrail.config.TestRailConfig;
+import de.nexible.gauge.testrail.config.TestRailUtil;
 import de.nexible.gauge.testrail.context.TestRailReportContext;
 import de.nexible.gauge.testrail.model.TestResult;
 import org.json.simple.JSONArray;
@@ -15,7 +15,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static de.nexible.gauge.testrail.TestRailTimespanHandler.toTimeFormat;
@@ -106,7 +105,7 @@ public final class TestRailDefaultHandler implements GaugeResultListener {
 
     private List<String> getTestRailCaseIds(Spec.ProtoScenario protoScenario) {
         return protoScenario.getTagsList().stream()
-                .filter(TestRailConfig::isTestRailTag)
+                .filter(TestRailUtil::isTestRailTag)
                 .map(id -> id.substring(1))
                 .collect(Collectors.toList());
     }

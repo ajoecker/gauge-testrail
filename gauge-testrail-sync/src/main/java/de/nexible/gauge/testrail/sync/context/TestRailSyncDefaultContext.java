@@ -22,18 +22,13 @@ public class TestRailSyncDefaultContext extends TestRailDefaultContext implement
     }
 
     @Override
-    public String getGaugeTemplateId() {
-        return getenv("testrail.gauge.template.id");
+    public int getGaugeTemplateId() {
+        return parseInt(getenv("testrail.gauge.template.id"));
     }
 
     @Override
     public String getSpecFieldLabel() {
         return getenv("testrail.gauge.spec.label");
-    }
-
-    @Override
-    public String getSectionId() {
-        return getenv("testrail.section");
     }
 
     @Override

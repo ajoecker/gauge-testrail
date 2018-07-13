@@ -2,7 +2,7 @@ package de.nexible.gauge.testrail.sync.model;
 
 import com.google.common.collect.ImmutableList;
 import com.thoughtworks.gauge.Spec;
-import de.nexible.gauge.testrail.config.TestRailConfig;
+import de.nexible.gauge.testrail.config.TestRailUtil;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -12,7 +12,7 @@ import java.util.Optional;
 
 public final class GaugeSpec extends Tagged {
     private Path specFile;
-    private List<Tagged> scenarios = new ArrayList<>();
+    private List<GaugeScenario> scenarios = new ArrayList<>();
 
     private GaugeSpec() {
         // static constructor
@@ -21,23 +21,19 @@ public final class GaugeSpec extends Tagged {
     public static GaugeSpec newInstance(Spec.ProtoSpec spec) {
         GaugeSpec gaugeSpec = new GaugeSpec();
         gaugeSpec.specFile = Paths.get(spec.getFileName());
-        gaugeSpec.tag = spec.getTagsList().stream().filter(TestRailConfig::isSectionTag).findAny();
+        gaugeSpec.tag = spec.getTagsList().stream().filter(TestRailUtil::isSectionTag).findAny();
         gaugeSpec.heading = spec.getSpecHeading();
+        gaugeSpec.setSteps(spec.getItemsList());
         return gaugeSpec;
     }
 
     public Tagged addScenario(Spec.ProtoScenario scenario) {
-        Optional<String> testRailTag = scenario
-                .getTagsList()
-                .stream()
-                .filter(TestRailConfig::isTestRailTag)
-                .findAny();
-        Tagged tagged = newInstance(scenario.getScenarioHeading(), testRailTag);
+        GaugeScenario tagged = GaugeScenario.newInstance(scenario);
         scenarios.add(tagged);
         return tagged;
     }
 
-    public List<Tagged> getScenariosWithTag() {
+    public List<GaugeScenario> getScenarios() {
         return ImmutableList.copyOf(scenarios);
     }
 
@@ -45,16 +41,18 @@ public final class GaugeSpec extends Tagged {
         return specFile;
     }
 
-    public Tagged getTaggedByName(String line) {
+    public Optional<GaugeScenario> findScenarioByName(String line) {
         String onlyHeading = line.substring(3).trim();
-        return scenarios.stream().filter(t -> t.getHeading().equals(onlyHeading)).findFirst().orElse(newInstance("", Optional.empty()));
+        return scenarios.stream().filter(t -> t.getHeading().equals(onlyHeading)).findFirst();
     }
 
     @Override
     public String toString() {
-        return "GaugeSpecRetrieval{" +
+        return "GaugeSpec{" +
                 "specFile=" + specFile +
                 ", scenarios=" + scenarios +
+                ", heading='" + heading + '\'' +
+                ", tag=" + tag +
                 '}';
     }
 }

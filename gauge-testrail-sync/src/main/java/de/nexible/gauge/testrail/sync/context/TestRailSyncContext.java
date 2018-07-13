@@ -13,7 +13,7 @@ public interface TestRailSyncContext extends TestRailContext {
      *
      * @return
      */
-    String getGaugeTemplateId();
+    int getGaugeTemplateId();
 
     /**
      * Returns the database label of the spec field in TestRail
@@ -22,12 +22,6 @@ public interface TestRailSyncContext extends TestRailContext {
      */
     String getSpecFieldLabel();
 
-    /**
-     * Returns the id of the section, in which test cases will be added
-     *
-     * @return
-     */
-    String getSectionId();
 
     int projectId();
 

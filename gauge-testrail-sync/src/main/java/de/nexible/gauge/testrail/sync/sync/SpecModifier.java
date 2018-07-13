@@ -1,12 +1,13 @@
 package de.nexible.gauge.testrail.sync.sync;
 
+import de.nexible.gauge.testrail.sync.model.GaugeScenario;
 import de.nexible.gauge.testrail.sync.model.GaugeSpec;
-import de.nexible.gauge.testrail.sync.model.Tagged;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Optional;
 
 import static java.nio.file.Files.readAllLines;
 
@@ -24,10 +25,9 @@ public class SpecModifier implements Sync {
                     if (line.startsWith("#") && gaugeSpec.hasBeenTagged()) {
                         i = changeSpecFile(lines, i, gaugeSpec.getTag());
                     } else if (line.startsWith("##")) {
-                        Tagged t = gaugeSpec.getTaggedByName(line);
-                        if (t.hasBeenTagged()) {
-                            i = changeSpecFile(lines, i, t.getTag());
-                        }
+                        Optional<GaugeScenario> t = gaugeSpec.findScenarioByName(line);
+                        final int counter = i;
+                        t.ifPresent(gaugeScenario -> changeSpecFile(lines, counter, gaugeScenario.getTag()));
                     }
                 }
                 write(specFile, lines);

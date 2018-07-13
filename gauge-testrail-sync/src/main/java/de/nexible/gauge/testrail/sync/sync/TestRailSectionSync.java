@@ -12,8 +12,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static de.nexible.gauge.testrail.config.TestRailConfig.parseSectionId;
-import static de.nexible.gauge.testrail.config.TestRailConfig.toSectionTag;
+import static de.nexible.gauge.testrail.config.TestRailUtil.parseSectionId;
+import static de.nexible.gauge.testrail.config.TestRailUtil.toSectionTag;
 
 public class TestRailSectionSync implements Sync {
     private TestRailSyncContext testRailContext;

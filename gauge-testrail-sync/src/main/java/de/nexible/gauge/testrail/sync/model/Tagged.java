@@ -1,19 +1,30 @@
 package de.nexible.gauge.testrail.sync.model;
 
+import com.thoughtworks.gauge.Spec;
+
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class Tagged {
     protected String heading;
     protected Optional<String> tag;
+    protected List<String> steps;
     private boolean hasChanged;
 
-    public static Tagged newInstance(String heading, Optional<String> tag) {
-        Tagged tagged = new Tagged();
-        tagged.heading = heading;
-        tagged.tag = tag;
-        tagged.hasChanged = false;
-        return tagged;
+    protected final void setSteps(List<Spec.ProtoItem> protoItems) {
+        steps = protoItems.stream()
+                .filter(protoItem -> protoItem.getItemType() == Spec.ProtoItem.ItemType.Step)
+                .map(Spec.ProtoItem::getStep)
+                .map(Spec.ProtoStep::getParsedText)
+                .collect(Collectors.toList());
+    }
+
+
+    public List<String> getSteps() {
+        return Collections.unmodifiableList(steps);
     }
 
     public boolean hasTag() {
@@ -46,6 +57,7 @@ public class Tagged {
         return "Tagged{" +
                 "heading='" + heading + '\'' +
                 ", tag=" + tag +
+                ", steps=" + steps +
                 ", hasChanged=" + hasChanged +
                 '}';
     }
@@ -57,11 +69,13 @@ public class Tagged {
         Tagged tagged = (Tagged) o;
         return hasChanged == tagged.hasChanged &&
                 Objects.equals(heading, tagged.heading) &&
-                Objects.equals(tag, tagged.tag);
+                Objects.equals(tag, tagged.tag) &&
+                Objects.equals(steps, tagged.steps);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(heading, tag, hasChanged);
+
+        return Objects.hash(heading, tag, steps);
     }
 }

@@ -16,7 +16,7 @@ import java.util.List;
 
 import static de.nexible.gauge.testrail.sync.GaugeSpecRetrieval.retrieveSpecs;
 
-public class TestRailSync implements  Sync {
+public class TestRailSync implements Sync {
     private final List<Sync> syncs;
 
     public TestRailSync(List<Sync> syncs) {
@@ -35,7 +35,7 @@ public class TestRailSync implements  Sync {
 
     private static List<Sync> syncs(TestRailSyncContext testRailContext) {
         TestRailSectionSync testRailSectionSync = new TestRailSectionSync(testRailContext);
-        TestRailCaseSync testRailCaseSync = new TestRailCaseSync(testRailContext, new GaugeDefaultContext());
+        TestRailCaseSync testRailCaseSync = new TestRailCaseSync(testRailContext);
         SpecModifier specModifier = new SpecModifier();
         return Arrays.asList(testRailSectionSync, testRailCaseSync, specModifier);
     }
