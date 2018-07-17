@@ -36,6 +36,6 @@ public class TestRailUtil {
     }
 
     public static String formatSteps(List<String> scenario) {
-        return scenario.stream().map(s -> "* " + s).collect(Collectors.joining("\\n"));
+        return scenario.stream().map(s -> "* " + s).collect(Collectors.joining("\n"));
     }
 }
