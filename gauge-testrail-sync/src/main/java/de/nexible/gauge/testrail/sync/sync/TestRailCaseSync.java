@@ -11,11 +11,15 @@ import org.json.simple.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static de.nexible.gauge.testrail.config.TestRailUtil.parseCaseId;
 import static de.nexible.gauge.testrail.config.TestRailUtil.parseSectionId;
 
 public class TestRailCaseSync implements Sync {
+    private static final Logger logger = Logger.getLogger(TestRailCaseSync.class.getName());
+
     private TestRailSyncContext testRailContext;
 
     public TestRailCaseSync(TestRailSyncContext testRailContext) {
@@ -24,6 +28,7 @@ public class TestRailCaseSync implements Sync {
 
     @Override
     public List<GaugeSpec> sync(List<GaugeSpec> specData) {
+        logger.info(() -> "Sync test cases");
         APIClient testRailClient = testRailContext.getTestRailClient();
         for (GaugeSpec gaugeSpec : specData) {
             gaugeSpec.getScenarios().stream().forEach(gaugeScenario -> sendToTestRail(testRailClient, gaugeSpec, gaugeScenario));
@@ -32,31 +37,31 @@ public class TestRailCaseSync implements Sync {
     }
 
     private GaugeScenario sendToTestRail(APIClient testRailClient, GaugeSpec gaugeSpec, GaugeScenario scenario) {
-        String sendTo = scenario.hasBeenTagged() ? addCase(parseSectionId(gaugeSpec.getTag())) : updateCase(parseCaseId(scenario.getTag()));
-        System.out.println(sendTo);
+        String sendTo = scenario.hasTag() ? updateCase(parseCaseId(scenario.getTag())) : addCase(parseSectionId(gaugeSpec.getTag()));
+        logger.info(() -> "Scenario '" + scenario.getHeading() + "' uses " + sendTo);
         List<String> allSteps = new ArrayList<>(gaugeSpec.getSteps());
         allSteps.addAll(scenario.getSteps());
-        System.out.println("ALL STEPS: " + allSteps);
         try {
             JSONObject postResult = (JSONObject) testRailClient.sendPost(sendTo, buildDataObject(allSteps, scenario.getHeading()));
-            System.out.println("result: " + postResult);
-            if (scenario.hasBeenTagged()) {
+            if (!scenario.hasTag()) {
                 scenario.setTag("C" + postResult.get("id"));
+                logger.info(() -> "Scenario '" + scenario.getHeading() + "' now has tag " + scenario.getTag());
             }
         } catch (IOException | APIException e) {
-            // TODO logger
-            e.printStackTrace();
+            logger.log(Level.WARNING, e, () -> "Failed to update scenario '" + scenario.getHeading() + "'");
         }
         return scenario;
     }
 
     private JSONObject buildDataObject(List<String> scenario, String heading) {
         JSONObject data = new JSONObject();
-        data.put("steps", TestRailUtil.formatSteps(scenario));
+        data.put("custom_steps", TestRailUtil.formatSteps(scenario));
         data.put("template_id", testRailContext.getGaugeTemplateId());
         data.put("title", heading);
-        data.put("custom_automation_type", "Gauge");
-        System.out.println("data: " + data);
+        int automationId = testRailContext.getAutomationId();
+        if (testRailContext.isKnown(automationId)) {
+            data.put("custom_automation_type", automationId);
+        }
         return data;
     }
 
@@ -66,11 +71,5 @@ public class TestRailCaseSync implements Sync {
 
     private String addCase(int sectionId) {
         return "add_case/" + sectionId;
-    }
-
-    public static void main(String[] args) {
-        APIClient client = new APIClient("https://joecker.testrail.io");
-        client.setUser("ajoecker@yahoo.com");
-        client.setPassword("NCFgI3wdyozwonG6WxL/-QMLq6PiFuUBU7hFciFUJ");
     }
 }

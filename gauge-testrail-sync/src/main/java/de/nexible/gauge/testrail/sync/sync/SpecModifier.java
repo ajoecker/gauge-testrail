@@ -21,13 +21,13 @@ public class SpecModifier implements Sync {
 
                 for (int i = 0; i < lines.size(); i++) {
                     String line = lines.get(i).trim();
-
-                    if (line.startsWith("#") && gaugeSpec.hasBeenTagged()) {
-                        i = changeSpecFile(lines, i, gaugeSpec.getTag());
-                    } else if (line.startsWith("##")) {
+                    if (line.startsWith("##")) {
                         Optional<GaugeScenario> t = gaugeSpec.findScenarioByName(line);
-                        final int counter = i;
-                        t.ifPresent(gaugeScenario -> changeSpecFile(lines, counter, gaugeScenario.getTag()));
+                        if (t.isPresent() && t.get().hasBeenTagged()) {
+                            i = changeSpecFile(lines, i, t.get().getTag());
+                        }
+                    } else if (line.startsWith("#") && gaugeSpec.hasBeenTagged()) {
+                        i = changeSpecFile(lines, i, gaugeSpec.getTag());
                     }
                 }
                 write(specFile, lines);

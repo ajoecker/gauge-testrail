@@ -11,28 +11,39 @@ import static java.lang.System.getenv;
  * @author ajoecker
  */
 public class TestRailSyncDefaultContext extends TestRailDefaultContext implements TestRailSyncContext {
+    private static final int UNKNOWN = -100;
+
     @Override
     public int getGaugeApiPort() {
-        return parseInt(getenv("GAUGE_API_PORT"));
+        return read("GAUGE_API_PORT");
+    }
+
+    @Override
+    public int getAutomationId() {
+        return read("testrail.automation.type");
     }
 
     @Override
     public int projectId() {
-        return parseInt(getenv("testrail.project"));
+        return read("testrail.project");
     }
 
     @Override
     public int getGaugeTemplateId() {
-        return parseInt(getenv("testrail.gauge.template.id"));
+        return read("testrail.gauge.template");
     }
 
     @Override
-    public String getSpecFieldLabel() {
-        return getenv("testrail.gauge.spec.label");
+    public boolean isKnown(int id) {
+        return id != UNKNOWN;
     }
 
-    @Override
-    public String getSpecLink() {
-        return getenv("testrail.gauge.link");
+    private int read(String s) {
+        String getenv = getenv(s);
+        if (getenv == null || getenv.equals("")) {
+            return UNKNOWN;
+        }
+        return parseInt(getenv.trim());
     }
+
 }

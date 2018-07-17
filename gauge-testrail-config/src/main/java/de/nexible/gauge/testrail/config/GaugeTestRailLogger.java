@@ -1,6 +1,4 @@
-package de.nexible.gauge.testrail;
-
-import de.nexible.gauge.testrail.context.GaugeReportContext;
+package de.nexible.gauge.testrail.config;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -24,24 +22,18 @@ import java.util.logging.Logger;
  * @author ajoecker
  */
 public class GaugeTestRailLogger {
-    public static void initializeLogger(GaugeReportContext context) {
+    public static void initializeLogger(GaugeContext context, String logFileName) {
         String root = context.getGaugeProjectRoot();
         String logsDir = context.getGaugeLogDir();
-        System.out.println("Init with " + root + " and " + logsDir);
-        Path logFile = Paths.get(root, logsDir, "testrail.log");
+        Path logFile = Paths.get(root, logsDir, logFileName);
         try {
             FileHandler fileHandler = new FileHandler(logFile.toString(), 0, 1, false);
             CustomLogFormatter customLogFormatter = new CustomLogFormatter();
             fileHandler.setFormatter(customLogFormatter);
             fileHandler.setLevel(Level.FINE);
 
-            ConsoleHandler consoleHandler = new ConsoleHandler();
-            consoleHandler.setFormatter(customLogFormatter);
-            consoleHandler.setLevel(Level.FINE);
-
             Logger logger = LogManager.getLogManager().getLogger("");
             logger.addHandler(fileHandler);
-            logger.addHandler(consoleHandler);
             logger.setUseParentHandlers(false);
 
             Logger.getLogger(GaugeTestRailLogger.class.getName()).info(() -> "Logging initialized. Logging into " + logFile);
@@ -51,12 +43,17 @@ public class GaugeTestRailLogger {
         }
     }
 
+    public static void main(String[] args) {
+        LogRecord logRecord = new LogRecord(Level.ALL, "a message");
+        logRecord.setInstant(Instant.ofEpochMilli(23045));
+    }
+
     static class CustomLogFormatter extends Formatter {
         private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm:ss.SSS");
 
         public String format(LogRecord record) {
             StringBuilder builder = new StringBuilder(1000);
-            ZonedDateTime zdt = ZonedDateTime.ofInstant(Instant.ofEpochMilli(record.getMillis()), ZoneId.systemDefault());
+            ZonedDateTime zdt = ZonedDateTime.ofInstant(record.getInstant(), ZoneId.systemDefault());
             builder.append(zdt.format(FORMATTER)).append(" - ");
             builder.append("[").append(record.getSourceClassName()).append(".");
             builder.append(record.getSourceMethodName()).append("] - ");

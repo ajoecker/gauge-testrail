@@ -23,7 +23,7 @@ public class TestRailSectionSyncTest {
     public void newSpec() throws IOException, APIException {
         APIClient client = Mockito.mock(APIClient.class);
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("id", 13);
+        jsonObject.put("id", 13l);
         Mockito.when(client.sendPost("add_section/1", ImmutableMap.of("name","a spec"))).thenReturn(jsonObject);
         TestRailSectionSync testRailSectionSync = new TestRailSectionSync(new TestSyncContext(client));
         GaugeSpec gaugeSpec = GaugeSpec.newInstance(Spec.ProtoSpec.newBuilder().setSpecHeading("a spec").build());
@@ -35,7 +35,7 @@ public class TestRailSectionSyncTest {
     public void hasTagAndNotChanged() throws IOException, APIException {
         APIClient client = Mockito.mock(APIClient.class);
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("id", 13);
+        jsonObject.put("id", 13l);
         Mockito.when(client.sendPost("add_section/1", ImmutableMap.of("name","a spec"))).thenReturn(jsonObject);
         TestRailSectionSync testRailSectionSync = new TestRailSectionSync(new TestSyncContext(client));
         GaugeSpec gaugeSpec = GaugeSpec.newInstance(Spec.ProtoSpec.newBuilder().setSpecHeading("a spec").build());

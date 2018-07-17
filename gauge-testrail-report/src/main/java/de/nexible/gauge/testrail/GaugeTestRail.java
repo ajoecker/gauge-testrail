@@ -3,6 +3,7 @@ package de.nexible.gauge.testrail;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.gurock.testrail.APIException;
+import de.nexible.gauge.testrail.config.GaugeTestRailLogger;
 import de.nexible.gauge.testrail.context.GaugeReportContext;
 import de.nexible.gauge.testrail.context.GaugeDefaultReportContext;
 import de.nexible.gauge.testrail.context.RerunGaugeReportContext;
@@ -41,9 +42,9 @@ public class GaugeTestRail {
         gaugeTestRail.run();
     }
 
-    private void run() throws IOException, APIException {
+    private void run() throws IOException {
         GaugeReportContext gaugeContext = getGaugeContext();
-        GaugeTestRailLogger.initializeLogger(gaugeContext);
+        GaugeTestRailLogger.initializeLogger(gaugeContext, "testrail.log");
         TestRailReportContext testRailContext = getTestRailContext();
 
         GaugeLastRun gaugeLastRun = new GaugeLastRun(gaugeContext, testRailContext);

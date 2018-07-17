@@ -16,21 +16,11 @@ public interface TestRailSyncContext extends TestRailContext {
     int getGaugeTemplateId();
 
     /**
-     * Returns the database label of the spec field in TestRail
+     * Returns the id of the TestRail project
      *
      * @return
      */
-    String getSpecFieldLabel();
-
-
     int projectId();
-
-    /**
-     * Returns the base link to the spec files in the gauge project
-     *
-     * @return
-     */
-    String getSpecLink();
 
     /**
      * Returns the gauge api port to listen to, to receive gauge data information
@@ -38,4 +28,8 @@ public interface TestRailSyncContext extends TestRailContext {
      * @return
      */
     int getGaugeApiPort();
+
+    int getAutomationId();
+
+    boolean isKnown(int automationId);
 }

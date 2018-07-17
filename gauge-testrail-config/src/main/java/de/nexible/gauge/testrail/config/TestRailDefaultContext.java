@@ -12,7 +12,7 @@ public class TestRailDefaultContext implements TestRailContext {
         String url = System.getenv("testrail.url");
         String token = System.getenv("testrail.token");
         String user = System.getenv("testrail.user");
-        logger.info(() -> "connecting to testrail instance " + url + " as " + user + " / " + token);
+        logger.info(() -> "connecting to testrail instance " + url + " as " + user);
         APIClient client = new APIClient(url);
         client.setPassword(token);
         client.setUser(user);

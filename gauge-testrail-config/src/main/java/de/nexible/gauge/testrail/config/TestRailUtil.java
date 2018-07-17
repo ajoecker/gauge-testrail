@@ -31,7 +31,7 @@ public class TestRailUtil {
         return parseInt(sectionTag.replace(SECTION, ""));
     }
 
-    public static String toSectionTag(int newSection) {
+    public static String toSectionTag(long newSection) {
         return SECTION + newSection;
     }
 

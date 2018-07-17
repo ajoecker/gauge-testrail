@@ -75,7 +75,6 @@ public class Tagged {
 
     @Override
     public int hashCode() {
-
         return Objects.hash(heading, tag, steps);
     }
 }

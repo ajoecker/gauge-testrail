@@ -4,12 +4,14 @@ import com.google.protobuf.CodedInputStream;
 import com.google.protobuf.CodedOutputStream;
 import com.thoughtworks.gauge.Api;
 import com.thoughtworks.gauge.Spec;
+import de.nexible.gauge.testrail.sync.GaugeSpecRetrieval;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import static com.thoughtworks.gauge.Api.APIMessage.newBuilder;
@@ -21,6 +23,8 @@ import static java.util.Collections.emptyList;
  * @author ajoecker
  */
 public class GaugeSpecRetriever {
+    private static final Logger logger = Logger.getLogger(GaugeSpecRetrieval.class.getName());
+
     /**
      * Fetches all specifications from the given socket
      *
@@ -29,12 +33,12 @@ public class GaugeSpecRetriever {
      * @throws IOException
      */
     public static List<Spec.ProtoSpec> fetchAllSpecs(Socket gaugeSocket) {
-        try{
+        try {
+            logger.info(() -> "Retrieving all specs from Gauge");
             Api.APIMessage response = getAPIResponse(getSpecApiMessage(), gaugeSocket);
             Api.SpecsResponse specsResponse = response.getSpecsResponse();
             return specsResponse.getDetailsList().stream().map(Api.SpecsResponse.SpecDetail::getSpec).collect(Collectors.toList());
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             // TODO logger
             return emptyList();
         }

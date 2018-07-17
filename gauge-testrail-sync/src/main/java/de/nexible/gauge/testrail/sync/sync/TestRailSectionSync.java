@@ -11,11 +11,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static de.nexible.gauge.testrail.config.TestRailUtil.parseSectionId;
 import static de.nexible.gauge.testrail.config.TestRailUtil.toSectionTag;
 
 public class TestRailSectionSync implements Sync {
+    private static final Logger logger = Logger.getLogger(TestRailSectionSync.class.getName());
+
     private TestRailSyncContext testRailContext;
 
     public TestRailSectionSync(TestRailSyncContext testRailContext) {
@@ -23,15 +27,19 @@ public class TestRailSectionSync implements Sync {
     }
 
     public List<GaugeSpec> sync(List<GaugeSpec> specData) {
+        logger.info(() -> "Start sync sections");
         List<GaugeSpec> changedData = new ArrayList<>(specData.size());
         for (GaugeSpec s : specData) {
             if (s.hasTag()) {
+                logger.info(() -> "'" + s.getHeading() + "' is already tagged (" + s.getTag() + "). Checking for updates");
                 checkForSectionUpdate(s);
             } else {
                 try {
+                    logger.info(() -> "'" + s.getHeading() + "' has no tag yet. Send to TestRail to get new");
                     s.setTag(toSectionTag(createNewSection(s)));
+                    logger.info(() -> "'" + s.getHeading() + "' has now received tag: " + s.getTag());
                 } catch (IOException | APIException e) {
-                    // TODO logger
+                    logger.log(Level.WARNING, e, () -> "Failed to sync section '" + s.getHeading() + "'");
                     return Collections.emptyList();
                 }
             }
@@ -40,11 +48,11 @@ public class TestRailSectionSync implements Sync {
         return changedData;
     }
 
-    private int createNewSection(GaugeSpec s) throws IOException, APIException {
+    private long createNewSection(GaugeSpec s) throws IOException, APIException {
         int projectId = testRailContext.projectId();
         APIClient testRailClient = testRailContext.getTestRailClient();
         JSONObject result = (JSONObject) testRailClient.sendPost("add_section/" + projectId, ImmutableMap.of("name", s.getHeading()));
-        return (int) result.get("id");
+        return (long) result.get("id");
     }
 
     private void checkForSectionUpdate(GaugeSpec s) {
