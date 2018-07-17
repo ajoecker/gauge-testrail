@@ -28,10 +28,9 @@ The properties file must contain the following entries:
 testrail.user = // the user to login. must be an email known to TestRail
 testrail.token = // the token of the user (see http://docs.gurock.com/testrail-api2/accessing)
 testrail.url = // the base url of the TestRail instance
-testrail.gauge.template.id = // the id of the gauge template (see section "TestRail configuration")
-testrail.gauge.spec.label = // the name of the spec file custom field in TestRail (see section "TestRail configuration")
-testrail.section = // the id of the section where the cases shall be added
-testrail.gauge.link = // link prefix to the spec file (e.g git link to the project, up to the project root)
+testrail.project = // the id of the project where to sync
+testrail.gauge.template = // the testrail template to use (it expects to have the simple step field)
+testrail.automation.type = // optional. the id of the automation type to use
 ```
 
 Call `gauge docs testrail-sync`
