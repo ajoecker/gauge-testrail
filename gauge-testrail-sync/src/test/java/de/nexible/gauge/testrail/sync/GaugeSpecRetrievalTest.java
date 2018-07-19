@@ -7,7 +7,12 @@ import de.nexible.gauge.testrail.sync.model.GaugeSpec;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+
 import static de.nexible.gauge.testrail.sync.GaugeSpecRetrieval.retrieveSpecs;
+import static de.nexible.gauge.testrail.sync.sync.SyncUtil.getCaseText;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class GaugeSpecRetrievalTest {
@@ -71,12 +76,33 @@ public class GaugeSpecRetrievalTest {
         assertThat(retrieveSpecs(ImmutableList.of(build))).flatExtracting(GaugeSpec::getScenarios).containsOnly(expected1, expected2).allMatch(p -> !p.hasBeenTagged());
     }
 
-    private Spec.ProtoItem buildScenario(String title, String... tags) {
+    @Test
+    public void conceptandCommentsAreConsidered() throws IOException {
+        String expected = "ein spec kommentar\n" +
+                "in zwei Zeilen\n" +
+                "\n" +
+                "ein scenario kommentar\n" +
+                "in zwei Zeilen\n" +
+                "* Öffne die backoffice Testumgebung\n" +
+                "* Login mit test user\n" +
+                "* Lade Vertragsdaten aus <file:/data/contract_basis.yaml>\n" +
+                "* Erstelle einen neuen Vertrag\n" +
+                "* Überprüfe, dass das Prämienkonto die korrekte Anzahl von Buchungen hat";
+
+        URL resource = GaugeSpecRetrievalTest.class.getResource("/spec.serialised");
+        try (InputStream ins = resource.openStream()) {
+            Spec.ProtoSpec protoSpec = Spec.ProtoSpec.parseFrom(ins);
+            GaugeSpec gaugeSpecs = retrieveSpecs(ImmutableList.of(protoSpec)).get(0);
+            String caseText = getCaseText(gaugeSpecs, gaugeSpecs.getScenarios().get(0));
+            assertThat(caseText).isEqualTo(expected);
+        }
+    }
+
+    private Spec.ProtoItem.Builder buildScenario(String title, String... tags) {
         Spec.ProtoScenario.Builder ps = Spec.ProtoScenario.newBuilder().setScenarioHeading(title);
         for (String t : tags) {
             ps.addTags(t);
         }
-        return Spec.ProtoItem.newBuilder().setItemType(Spec.ProtoItem.ItemType.Scenario).setScenario(ps.build()).build();
+        return Spec.ProtoItem.newBuilder().setItemType(Spec.ProtoItem.ItemType.Scenario).setScenario(ps.build());
     }
-
 }

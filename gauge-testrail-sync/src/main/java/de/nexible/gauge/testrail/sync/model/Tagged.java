@@ -1,54 +1,80 @@
 package de.nexible.gauge.testrail.sync.model;
 
 import com.thoughtworks.gauge.Spec;
+import de.nexible.gauge.testrail.config.TestRailUtil;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class Tagged {
     protected String heading;
     protected Optional<String> tag;
     protected List<String> steps;
+    protected List<String> comments;
     private boolean hasChanged;
 
     protected final void setSteps(List<Spec.ProtoItem> protoItems) {
         steps = protoItems.stream()
-                .filter(protoItem -> protoItem.getItemType() == Spec.ProtoItem.ItemType.Step)
-                .map(Spec.ProtoItem::getStep)
-                .map(Spec.ProtoStep::getParsedText)
+                .filter(this::isConceptOrStep)
+                .map(this::extractStep)
+                .map(Spec.ProtoStep::getActualText)
                 .collect(Collectors.toList());
     }
 
+    private boolean isConceptOrStep(Spec.ProtoItem protoItem) {
+        return protoItem.getItemType() == Spec.ProtoItem.ItemType.Concept || protoItem.getItemType() == Spec.ProtoItem.ItemType.Step;
+    }
 
-    public List<String> getSteps() {
+    private boolean isComment(Spec.ProtoItem protoItem) {
+        return protoItem.getItemType() == Spec.ProtoItem.ItemType.Comment;
+    }
+
+    private Spec.ProtoStep extractStep(Spec.ProtoItem protoItem) {
+        return protoItem.getItemType() == Spec.ProtoItem.ItemType.Step ? protoItem.getStep() : protoItem.getConcept().getConceptStep();
+    }
+
+    public final List<String> getComments() {
+        return Collections.unmodifiableList(comments);
+    }
+
+    protected final void setComments(List<Spec.ProtoItem> itemsList) {
+        comments = itemsList.stream()
+                .filter(this::isComment)
+                .map(Spec.ProtoItem::getComment)
+                .map(Spec.ProtoComment::getText)
+                .collect(Collectors.toList());
+    }
+
+    public final List<String> getSteps() {
         return Collections.unmodifiableList(steps);
     }
 
-    public boolean hasTag() {
+    public final boolean hasTag() {
         return tag.isPresent();
     }
 
-    public String getTag() {
+    public final String getTag() {
         return tag.get();
     }
 
-    public boolean hasHeadingChanged(String name) {
+    public final boolean hasHeadingChanged(String name) {
         return !name.equals(heading);
     }
 
-    public String getHeading() {
+    public final String getHeading() {
         return heading;
     }
 
-    public void setTag(String s) {
+    public final void setTag(String s) {
         this.tag = Optional.of(s);
         this.hasChanged = true;
     }
 
-    public boolean hasBeenTagged() {
+    public final boolean hasBeenTagged() {
         return hasTag() && hasChanged;
     }
 
@@ -60,6 +86,10 @@ public class Tagged {
                 ", steps=" + steps +
                 ", hasChanged=" + hasChanged +
                 '}';
+    }
+
+    protected static Optional<String> findTestRailTag(List<String> tags, Predicate<String> filter) {
+        return tags.stream().filter(filter).findAny();
     }
 
     @Override

@@ -22,7 +22,7 @@ final class TestSyncContext extends TestRailSyncDefaultContext {
     }
 
     @Override
-    public int getGaugeTemplateId() {
+    public int getTemplateId() {
         return 5;
     }
 }

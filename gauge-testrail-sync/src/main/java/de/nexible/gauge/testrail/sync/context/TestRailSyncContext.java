@@ -13,7 +13,7 @@ public interface TestRailSyncContext extends TestRailContext {
      *
      * @return
      */
-    int getGaugeTemplateId();
+    int getTemplateId();
 
     /**
      * Returns the id of the TestRail project

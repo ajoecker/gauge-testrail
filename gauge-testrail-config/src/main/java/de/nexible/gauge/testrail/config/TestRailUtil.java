@@ -1,8 +1,6 @@
 package de.nexible.gauge.testrail.config;
 
-import java.util.List;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import static java.lang.Integer.parseInt;
 
@@ -33,9 +31,5 @@ public class TestRailUtil {
 
     public static String toSectionTag(long newSection) {
         return SECTION + newSection;
-    }
-
-    public static String formatSteps(List<String> scenario) {
-        return scenario.stream().map(s -> "* " + s).collect(Collectors.joining("\n"));
     }
 }

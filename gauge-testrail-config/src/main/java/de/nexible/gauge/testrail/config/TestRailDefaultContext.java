@@ -9,9 +9,9 @@ public class TestRailDefaultContext implements TestRailContext {
 
     @Override
     public APIClient getTestRailClient() {
-        String url = System.getenv("testrail.url");
-        String token = System.getenv("testrail.token");
-        String user = System.getenv("testrail.user");
+        String url = read("testrail.url");
+        String token = read("testrail.token");
+        String user = read("testrail.user");
         logger.info(() -> "connecting to testrail instance " + url + " as " + user);
         APIClient client = new APIClient(url);
         client.setPassword(token);
@@ -26,5 +26,9 @@ public class TestRailDefaultContext implements TestRailContext {
            return Boolean.parseBoolean(dryRun.trim());
         }
         return false;
+    }
+
+    private String read(String key) {
+        return System.getenv(key).trim();
     }
 }

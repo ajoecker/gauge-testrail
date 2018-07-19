@@ -21,9 +21,11 @@ public final class GaugeSpec extends Tagged {
     public static GaugeSpec newInstance(Spec.ProtoSpec spec) {
         GaugeSpec gaugeSpec = new GaugeSpec();
         gaugeSpec.specFile = Paths.get(spec.getFileName());
-        gaugeSpec.tag = spec.getTagsList().stream().filter(TestRailUtil::isSectionTag).findAny();
+        gaugeSpec.tag = findTestRailTag(spec.getTagsList(), TestRailUtil::isSectionTag);
         gaugeSpec.heading = spec.getSpecHeading();
-        gaugeSpec.setSteps(spec.getItemsList());
+        List<Spec.ProtoItem> itemsList = spec.getItemsList();
+        gaugeSpec.setSteps(itemsList);
+        gaugeSpec.setComments(itemsList);
         return gaugeSpec;
     }
 

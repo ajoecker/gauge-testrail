@@ -16,6 +16,7 @@ import java.util.logging.Logger;
 
 import static de.nexible.gauge.testrail.config.TestRailUtil.parseCaseId;
 import static de.nexible.gauge.testrail.config.TestRailUtil.parseSectionId;
+import static de.nexible.gauge.testrail.sync.sync.SyncUtil.getCaseText;
 
 public class TestRailCaseSync implements Sync {
     private static final Logger logger = Logger.getLogger(TestRailCaseSync.class.getName());
@@ -36,13 +37,13 @@ public class TestRailCaseSync implements Sync {
         return specData;
     }
 
-    private GaugeScenario sendToTestRail(APIClient testRailClient, GaugeSpec gaugeSpec, GaugeScenario scenario) {
-        String sendTo = scenario.hasTag() ? updateCase(parseCaseId(scenario.getTag())) : addCase(parseSectionId(gaugeSpec.getTag()));
+    private GaugeScenario sendToTestRail(APIClient testRailClient, GaugeSpec spec, GaugeScenario scenario) {
+        String sendTo = scenario.hasTag() ? updateCase(parseCaseId(scenario.getTag())) : addCase(parseSectionId(spec.getTag()));
         logger.info(() -> "Scenario '" + scenario.getHeading() + "' uses " + sendTo);
-        List<String> allSteps = new ArrayList<>(gaugeSpec.getSteps());
+        List<String> allSteps = new ArrayList<>(spec.getSteps());
         allSteps.addAll(scenario.getSteps());
         try {
-            JSONObject postResult = (JSONObject) testRailClient.sendPost(sendTo, buildDataObject(allSteps, scenario.getHeading()));
+            JSONObject postResult = (JSONObject) testRailClient.sendPost(sendTo, buildDataObject(getCaseText(spec, scenario), scenario.getHeading()));
             if (!scenario.hasTag()) {
                 scenario.setTag("C" + postResult.get("id"));
                 logger.info(() -> "Scenario '" + scenario.getHeading() + "' now has tag " + scenario.getTag());
@@ -53,10 +54,10 @@ public class TestRailCaseSync implements Sync {
         return scenario;
     }
 
-    private JSONObject buildDataObject(List<String> scenario, String heading) {
+    private JSONObject buildDataObject(String text, String heading) {
         JSONObject data = new JSONObject();
-        data.put("custom_steps", TestRailUtil.formatSteps(scenario));
-        data.put("template_id", testRailContext.getGaugeTemplateId());
+        data.put("custom_steps", text);
+        data.put("template_id", testRailContext.getTemplateId());
         data.put("title", heading);
         int automationId = testRailContext.getAutomationId();
         if (testRailContext.isKnown(automationId)) {

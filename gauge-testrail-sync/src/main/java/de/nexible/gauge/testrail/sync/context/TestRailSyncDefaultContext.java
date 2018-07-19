@@ -29,8 +29,8 @@ public class TestRailSyncDefaultContext extends TestRailDefaultContext implement
     }
 
     @Override
-    public int getGaugeTemplateId() {
-        return read("testrail.gauge.template");
+    public int getTemplateId() {
+        return read("testrail.template");
     }
 
     @Override

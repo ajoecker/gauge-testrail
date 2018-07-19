@@ -1,0 +1,83 @@
+
+Prämienkontokorrektheit2
+ein spec kommentar2
+in zwei Zeilen2
+
+pn
+"Öffne die backoffice Testumgebung"Öffne die backoffice Testumgebung$"Öffne die backoffice TestumgebungCA
+Login mit test userLogin mit test userLogin mit test user�!"�!
+[Monatliche Zahlweise mit Vollkasko zeigt die richtige Anzahl von Buchungen im Prämienkonto"2
+ein scenario kommentar"2
+in zwei Zeilen"�
+�
+
+7Lade Vertragsdaten aus <file:/data/contract_basis.yaml>Lade Vertragsdaten aus {}Lade Vertragsdaten aus �	�	�	# Datavektor for a new contract
+---
+Vertragsbeginn: 01.01.2018
+Zahlungsweise: monatlich
+Zahlweg: Lastschrift
+Erstzulassung des Fahrzeugs: 30.05.2011
+Schadenfreiheitsklasse Haftpflicht: SF 5
+Schadenfreiheitsklasse Vollkasko: SF 5
+Deckung: Vollkasko
+HSN: 0603
+TSN: ALE
+Verheiratet: Ja
+Postleitzahl: 42781
+Geburtsdatum: 04.03.1975
+Zulassung auf den Versicherungsnehmer: 01.01.2018
+Max. Kilometer pro Jahr: 10000
+Geburtstag des jüngsten Fahrer: 07.07.1970
+Fahrzeugzubehör: 5.000 EUR
+Schlüsseldiebstahl: 1.000 EUR
+Tierbissfolge: 5.000 EUR
+Neu- oder Kaufpreis: 24 Monate
+Verzicht Abzug: Ja
+Erweiterter Elementarschutz: Ja
+Glasbruch: Ja
+Zusatzkosten: Ja
+Wertminderung: Ja
+Werkstattservice: Ja
+Kurzschlossfolge: Ja
+GAP Deckung: Nein
+Mobilität: Nein
+Werkstattbindung: Ja
+Rabattschutz: Nein
+Halter: Versicherungs­nehmer
+Nutzerkreis: Versicherungsnehmer und Partner
+Begleitetes Fahren mit 17: Nein
+Selbstbeteiligung Vollkasko: 300 EUR
+Selbstbeteiligung Teilkasko: 150 EUR
+Fahrzeugnutzung: gewerblich
+Nächtlicher Abstellplatz: Auf der Straße (öffentlich) / unterschiedlich
+Junge Familie: Nein
+Wohneigentum: Unbekannt
+Zweitwagen: Unbekanntfile:/data/contract_basis.yaml"��
+\
+Erstelle einen neuen VertragErstelle einen neuen VertragErstelle einen neuen Vertrag��
+b
+Erstelle einen neuen VorschlagErstelle einen neuen Vorschlag Erstelle einen neuen VorschlagOM
+Öffne VorschlagsanlageÖffne VorschlagsanlageÖffne Vorschlagsanlage}
+'Setze persönliche Daten für Vorschlag'Setze persönliche Daten für Vorschlag)'Setze persönliche Daten für VorschlagCA
+Setze VertragsdatenSetze VertragsdatenSetze Vertragsdatena_
+Lege einen neuen Vorschlag anLege einen neuen Vorschlag anLege einen neuen Vorschlag an��
+9Öffne Vorschläge und suche den neu erstellten Vorschlag9Öffne Vorschläge und suche den neu erstellten Vorschlag;9Öffne Vorschläge und suche den neu erstellten VorschlagOM
+Beantrage den VorschlagBeantrage den VorschlagBeantrage den Vorschlag75
+Öffne AnträgeÖffne AnträgeÖffne Anträge��
+8Überprüfe, den beantragten Vorschlag finden zu können8Überprüfe, den beantragten Vorschlag finden zu können:8Überprüfe, den beantragten Vorschlag finden zu könnensq
+#Policiere den neu erstellten Antrag#Policiere den neu erstellten Antrag%#Policiere den neu erstellten Antrag:8
+Öffne VerträgeÖffne VerträgeÖffne Verträge��
+6Überprüfe, den policierten Vertrag finden zu können6Überprüfe, den policierten Vertrag finden zu können86Überprüfe, den policierten Vertrag finden zu können��
+�
+'Führe den job "renewal" in sidekiq aus Führe den job {} in sidekiq ausFühre den job 	renewal in sidekiq auspn
+"Öffne System unter Administration"Öffne System unter Administration$"Öffne System unter AdministrationCA
+Öffne Sidekiq viewÖffne Sidekiq viewÖffne Sidekiq view:8
+Öffne Cron jobsÖffne Cron jobsÖffne Cron jobsYW
+Start Sidekiq job <job>Start Sidekiq job {}Start Sidekiq job jobjobIG
+Verlasse Sidekiq viewVerlasse Sidekiq viewVerlasse Sidekiq view"��
+�
+IÜberprüfe, dass das Prämienkonto die korrekte Anzahl von Buchungen hatIÜberprüfe, dass das Prämienkonto die korrekte Anzahl von Buchungen hatKIÜberprüfe, dass das Prämienkonto die korrekte Anzahl von Buchungen hatRP
+Öffne den neuen VertragÖffne den neuen VertragÖffne den neuen Vertrag��
+1Ermittel prämienrelevante Attribute des Vertrags1Ermittel prämienrelevante Attribute des Vertrags31Ermittel prämienrelevante Attribute des VertragsRP
+Öffne das PrämienkontoÖffne das PrämienkontoÖffne das Prämienkonto��
+@Überprüfe, dass die korrekt Anzahl von Buchungen vorhanden ist@Überprüfe, dass die korrekt Anzahl von Buchungen vorhanden istB@Überprüfe, dass die korrekt Anzahl von Buchungen vorhanden istj2oC:\Users\ajoecker\IdeaProjects\nexible-end2end\nexible-end2end-backend\specs\contracts\premiumaccounts_min.spec
