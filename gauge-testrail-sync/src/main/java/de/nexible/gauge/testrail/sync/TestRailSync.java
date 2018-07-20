@@ -1,6 +1,5 @@
 package de.nexible.gauge.testrail.sync;
 
-import com.thoughtworks.gauge.Spec;
 import de.nexible.gauge.testrail.config.GaugeDefaultContext;
 import de.nexible.gauge.testrail.config.GaugeTestRailLogger;
 import de.nexible.gauge.testrail.sync.context.TestRailSyncContext;
@@ -14,10 +13,6 @@ import de.nexible.gauge.testrail.sync.sync.TestRailCaseSync;
 import de.nexible.gauge.testrail.sync.sync.TestRailSectionSync;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 
 import static de.nexible.gauge.testrail.sync.GaugeSpecRetrieval.retrieveSpecs;
@@ -29,21 +24,15 @@ public class TestRailSync implements Sync {
         this.testRailContext = testRailContext;
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         TestRailSyncContext testRailContext = new TestRailSyncDefaultContext();
         GaugeTestRailLogger.initializeLogger(new GaugeDefaultContext(), "testrail-sync.log");
         List<GaugeSpec> specs = getSpecs(testRailContext);
-
-        //new TestRailSync(testRailContext).sync(specs);
+        new TestRailSync(testRailContext).sync(specs);
     }
 
-    private static List<GaugeSpec> getSpecs(TestRailSyncContext testRailContext) throws IOException {
-        List<Spec.ProtoSpec> specs = GaugeConnector.getSpecs(GaugeSpecRetriever::fetchAllSpecs, testRailContext.getGaugeApiPort());
-        Path path = Paths.get("spec-serialised.spec");
-        try (OutputStream os = Files.newOutputStream(path)) {
-            specs.get(0).writeTo(os);
-        }
-        return retrieveSpecs(specs);
+    private static List<GaugeSpec> getSpecs(TestRailSyncContext testRailContext) {
+        return retrieveSpecs(GaugeConnector.getSpecs(GaugeSpecRetriever::fetchAllSpecs, testRailContext.getGaugeApiPort()));
     }
 
     @Override

@@ -50,7 +50,7 @@ public class GaugeSpecTest {
 
     @Test
     public void simpleSpecWithNoSteps() {
-        Spec.ProtoStep step = Spec.ProtoStep.newBuilder().setParsedText("a step").build();
+        Spec.ProtoStep step = Spec.ProtoStep.newBuilder().setActualText("a step").build();
         Spec.ProtoItem stepItem = Spec.ProtoItem.newBuilder().setItemType(Spec.ProtoItem.ItemType.Step).setStep(step).build();
         Spec.ProtoSpec spec = Spec.ProtoSpec.newBuilder().setSpecHeading("a spec").setFileName("specFile").addItems(stepItem).build();
         GaugeSpec gaugeSpec = GaugeSpec.newInstance(spec);

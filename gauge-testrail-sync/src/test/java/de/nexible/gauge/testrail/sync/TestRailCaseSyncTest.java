@@ -36,8 +36,7 @@ public class TestRailCaseSyncTest {
                 .addScenarioItems(createStep("step"))
                 .build();
 
-        Tagged tagged = gaugeSpec.addScenario(scenario);
-        tagged.setTag("C123");
+        gaugeSpec.addScenario(scenario);
 
         TestRailCaseSync testRailCaseSync = new TestRailCaseSync(new TestSyncContext(client));
         List<GaugeSpec> sync = testRailCaseSync.sync(Arrays.asList(gaugeSpec));

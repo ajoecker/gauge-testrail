@@ -12,7 +12,7 @@ public class GaugeScenarioTest {
     @Test
     @DisplayName("A scenario with one step and no tag is parsed correctly")
     public void scenarioOneStepNoTag() {
-        Spec.ProtoStep theStep1 = Spec.ProtoStep.newBuilder().setParsedText("step1").build();
+        Spec.ProtoStep theStep1 = Spec.ProtoStep.newBuilder().setActualText("step1").build();
         Spec.ProtoItem step1 = Spec.ProtoItem.newBuilder().setStep(theStep1).setItemType(Spec.ProtoItem.ItemType.Step).build();
         Spec.ProtoScenario scenario = Spec.ProtoScenario.newBuilder().setScenarioHeading("a scenario").addScenarioItems(step1).build();
         GaugeScenario gaugeScenario = GaugeScenario.newInstance(scenario);
@@ -26,7 +26,7 @@ public class GaugeScenarioTest {
     @Test
     @DisplayName("A scenario with one step and TestRail tag is parsed correctly")
     public void scenarioOneStepTestRailTag() {
-        Spec.ProtoStep theStep1 = Spec.ProtoStep.newBuilder().setParsedText("step1").build();
+        Spec.ProtoStep theStep1 = Spec.ProtoStep.newBuilder().setActualText("step1").build();
         Spec.ProtoItem step1 = Spec.ProtoItem.newBuilder().setStep(theStep1).setItemType(Spec.ProtoItem.ItemType.Step).build();
         Spec.ProtoScenario scenario = Spec.ProtoScenario.newBuilder().setScenarioHeading("a scenario").addTags("C234").addScenarioItems(step1).build();
         GaugeScenario gaugeScenario = GaugeScenario.newInstance(scenario);
@@ -40,7 +40,7 @@ public class GaugeScenarioTest {
     @Test
     @DisplayName("A scenario with one step and tag is parsed correctly")
     public void scenarioOneStepTag() {
-        Spec.ProtoStep theStep1 = Spec.ProtoStep.newBuilder().setParsedText("step1").build();
+        Spec.ProtoStep theStep1 = Spec.ProtoStep.newBuilder().setActualText("step1").build();
         Spec.ProtoItem step1 = Spec.ProtoItem.newBuilder().setStep(theStep1).setItemType(Spec.ProtoItem.ItemType.Step).build();
         Spec.ProtoScenario scenario = Spec.ProtoScenario.newBuilder().setScenarioHeading("a scenario").addTags("smoke").addScenarioItems(step1).build();
         GaugeScenario gaugeScenario = GaugeScenario.newInstance(scenario);
@@ -54,15 +54,15 @@ public class GaugeScenarioTest {
     @Test
     @DisplayName("A scenario with one step, a teardown step and tag is parsed correctly")
     public void scenarioOneStepTagWithTeardown() {
-        Spec.ProtoStep theStep1 = Spec.ProtoStep.newBuilder().setParsedText("step1").build();
+        Spec.ProtoStep theStep1 = Spec.ProtoStep.newBuilder().setActualText("step1").build();
         Spec.ProtoItem step1 = Spec.ProtoItem.newBuilder().setStep(theStep1).setItemType(Spec.ProtoItem.ItemType.Step).build();
-        Spec.ProtoStep teardownStep = Spec.ProtoStep.newBuilder().setParsedText("teardown").build();
+        Spec.ProtoStep teardownStep = Spec.ProtoStep.newBuilder().setActualText("teardown").build();
         Spec.ProtoItem teardown = Spec.ProtoItem.newBuilder().setStep(teardownStep).setItemType(Spec.ProtoItem.ItemType.Step).build();;
         Spec.ProtoScenario scenario = Spec.ProtoScenario.newBuilder().setScenarioHeading("a scenario").addTags("smoke").addScenarioItems(step1).addTearDownSteps(teardown).build();
         GaugeScenario gaugeScenario = GaugeScenario.newInstance(scenario);
 
         assertAll("scenario",
-                () -> assertThat(gaugeScenario.getSteps()).containsOnly("step1"),
+                () -> assertThat(gaugeScenario.getSteps()).containsOnly("step1", "teardown"),
                 () ->assertThat(gaugeScenario.hasTag()).isFalse(),
                 () -> assertThat(gaugeScenario.getHeading()).isEqualTo("a scenario"));
     }

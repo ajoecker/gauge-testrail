@@ -3,6 +3,7 @@ package de.nexible.gauge.testrail.sync.model;
 import com.thoughtworks.gauge.Spec;
 import de.nexible.gauge.testrail.config.TestRailUtil;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -18,6 +19,15 @@ public class Tagged {
     private boolean hasChanged;
 
     protected final void setSteps(List<Spec.ProtoItem> protoItems) {
+//        steps = new ArrayList<>();
+//        for (Spec.ProtoItem p:protoItems) {
+//            if (p.getItemType() == Spec.ProtoItem.ItemType.Concept) {
+//                steps.add(p.getConcept().getConceptStep().getActualText());
+//            } else if (p.getItemType() == Spec.ProtoItem.ItemType.Step) {
+//                steps.add(p.getStep().getActualText());
+//            }
+//
+//        }
         steps = protoItems.stream()
                 .filter(this::isConceptOrStep)
                 .map(this::extractStep)
