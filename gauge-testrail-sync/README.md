@@ -1,4 +1,4 @@
-# Gauge Testrail report
+# Gauge Testrail sync plugin
 
 This projects is plugin for [gauge](http://getgauge.io) to sync gauge test cases with [TestRail](http://http://www.gurock.com/testrail/)
 
