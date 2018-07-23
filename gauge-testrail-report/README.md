@@ -18,7 +18,8 @@ To build the plugin, call `mvn clean package`.
 This will build the assembly file `artifacts/testrail-<version>.zip`, which can be installed as gauge plugin
 
 ### Install plugin
-Call `gauge install testrail` to install a released version of the plugin
+Call `gauge install testrail` to install a released version of the plugin.
+
 To install a custom build call `gauge install testrail -f <path>/testrail-<version>.zip`
 
 ### Use plugin
