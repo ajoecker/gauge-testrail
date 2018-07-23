@@ -7,7 +7,6 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.logging.ConsoleHandler;
 import java.util.logging.FileHandler;
 import java.util.logging.Formatter;
 import java.util.logging.Handler;
@@ -22,30 +21,28 @@ import java.util.logging.Logger;
  * @author ajoecker
  */
 public class GaugeTestRailLogger {
-    public static void initializeLogger(GaugeContext context, String logFileName) {
+    public static void initializeLogger(GaugeContext context, String logFileName, Level logLevel) {
         String root = context.getGaugeProjectRoot();
         String logsDir = context.getGaugeLogDir();
         Path logFile = Paths.get(root, logsDir, logFileName);
         try {
+            LogManager.getLogManager().reset();
+
             FileHandler fileHandler = new FileHandler(logFile.toString(), 0, 1, false);
             CustomLogFormatter customLogFormatter = new CustomLogFormatter();
             fileHandler.setFormatter(customLogFormatter);
-            fileHandler.setLevel(Level.FINE);
+            fileHandler.setLevel(logLevel);
 
             Logger logger = LogManager.getLogManager().getLogger("");
-            logger.addHandler(fileHandler);
             logger.setUseParentHandlers(false);
+            logger.addHandler(fileHandler);
+
 
             Logger.getLogger(GaugeTestRailLogger.class.getName()).info(() -> "Logging initialized. Logging into " + logFile);
         } catch (IOException e) {
             System.err.println("Failed to initialize logger, due to:");
             e.printStackTrace();
         }
-    }
-
-    public static void main(String[] args) {
-        LogRecord logRecord = new LogRecord(Level.ALL, "a message");
-        logRecord.setInstant(Instant.ofEpochMilli(23045));
     }
 
     static class CustomLogFormatter extends Formatter {

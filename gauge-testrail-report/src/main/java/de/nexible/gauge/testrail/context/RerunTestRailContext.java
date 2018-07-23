@@ -6,6 +6,7 @@ import de.nexible.gauge.testrail.config.TestRailContext;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Properties;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -24,6 +25,11 @@ public class RerunTestRailContext implements TestRailReportContext {
     @Override
     public String getTestRailRunId() {
         return properties.getProperty("testrail.run.id");
+    }
+
+    @Override
+    public Level getLogLevel() {
+        return readLogLevel(properties.getProperty("testrail.loglevel"));
     }
 
     @Override

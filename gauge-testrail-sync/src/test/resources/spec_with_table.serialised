@@ -1,0 +1,28 @@
+
+AngeboteB
+
+section_222
+
+pn
+"Öffne die nexible.de Testumgebung"Öffne die nexible.de Testumgebung$"Öffne die nexible.de TestumgebungUS
+Starte die AntragsstreckeStarte die AntragsstreckeStarte die Antragsstrecke�"�
+,Die Anzahl der Schäden bestimmt das Angebot"	B
+C27".2*
+(Testet, dass die folgenden Regeln gelten"22.
+,Haftpflichtschäden >= 4 --> nur Haftpflicht"824
+2TK Schäden + VK Schäden >= 6 --> nur Haftpflicht"��
+RÜberprüfe, dass die folgende Schadenskombinationen das korrekte Angebot forsiertUÜberprüfe, dass die folgende Schadenskombinationen das korrekte Angebot forsiert {}USÜberprüfe, dass die folgende Schadenskombinationen das korrekte Angebot forsiert |x"t
+,
+Haftpflicht
+	Teilkasko
+	Vollkasko
+Angebot,
+0
+0
+0
+!Haftpflicht, Teilkasko, Vollkasko
+4
+0
+0
+Haftpflicht:C27j2kC:\Users\ajoecker\IdeaProjects\nexible-end2end\nexible-end2end-frontend\specs\Antragsstrecke\rates_min.spec:
+section_22

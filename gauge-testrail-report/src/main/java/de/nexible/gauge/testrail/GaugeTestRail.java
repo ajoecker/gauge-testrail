@@ -44,8 +44,8 @@ public class GaugeTestRail {
 
     private void run() throws IOException {
         GaugeReportContext gaugeContext = getGaugeContext();
-        GaugeTestRailLogger.initializeLogger(gaugeContext, "testrail.log");
         TestRailReportContext testRailContext = getTestRailContext();
+        GaugeTestRailLogger.initializeLogger(gaugeContext, "testrail.log", testRailContext.getLogLevel());
 
         GaugeLastRun gaugeLastRun = new GaugeLastRun(gaugeContext, testRailContext);
         GaugeResultListener testRailHandler = new TestRailDefaultHandler(testRailContext);

@@ -1,7 +1,9 @@
 package de.nexible.gauge.testrail.config;
 
+import com.google.common.base.Strings;
 import com.gurock.testrail.APIClient;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class TestRailDefaultContext implements TestRailContext {
@@ -22,13 +24,18 @@ public class TestRailDefaultContext implements TestRailContext {
     @Override
     public boolean isDryRun() {
         String dryRun = System.getenv("testrail.dryRun");
-        if (!"".equals(dryRun)) {
-           return Boolean.parseBoolean(dryRun.trim());
+        if (!Strings.isNullOrEmpty(dryRun)) {
+            return Boolean.parseBoolean(dryRun.trim());
         }
         return false;
     }
 
     private String read(String key) {
         return System.getenv(key).trim();
+    }
+
+    @Override
+    public Level getLogLevel() {
+        return readLogLevel(System.getenv("testrail.loglevel"));
     }
 }

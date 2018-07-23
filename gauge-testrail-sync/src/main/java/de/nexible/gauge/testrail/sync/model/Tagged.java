@@ -1,7 +1,6 @@
 package de.nexible.gauge.testrail.sync.model;
 
 import com.thoughtworks.gauge.Spec;
-import de.nexible.gauge.testrail.config.TestRailUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,6 +10,8 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import static com.google.common.base.Strings.*;
+
 public class Tagged {
     protected String heading;
     protected Optional<String> tag;
@@ -19,20 +20,28 @@ public class Tagged {
     private boolean hasChanged;
 
     protected final void setSteps(List<Spec.ProtoItem> protoItems) {
-//        steps = new ArrayList<>();
-//        for (Spec.ProtoItem p:protoItems) {
-//            if (p.getItemType() == Spec.ProtoItem.ItemType.Concept) {
-//                steps.add(p.getConcept().getConceptStep().getActualText());
-//            } else if (p.getItemType() == Spec.ProtoItem.ItemType.Step) {
-//                steps.add(p.getStep().getActualText());
-//            }
-//
-//        }
-        steps = protoItems.stream()
-                .filter(this::isConceptOrStep)
-                .map(this::extractStep)
-                .map(Spec.ProtoStep::getActualText)
-                .collect(Collectors.toList());
+        steps = new ArrayList<>();
+        for (Spec.ProtoItem protoItem : protoItems) {
+            if (isConceptOrStep(protoItem)) {
+                Spec.ProtoStep protoStep = extractStep(protoItem);
+                steps.add(protoStep.getActualText());
+                for (Spec.Fragment fr : protoStep.getFragmentsList()) {
+                    if (fr.getFragmentType() == Spec.Fragment.FragmentType.Parameter) {
+                        Spec.Parameter parameter = fr.getParameter();
+                        if (parameter.getParameterType() == Spec.Parameter.ParameterType.Table) {
+                            Spec.ProtoTable table = parameter.getTable();
+                            Spec.ProtoTableRow headers = table.getHeaders();
+                            String header = headers.getCellsList().stream().collect(Collectors.joining("|:", "|||:", ""));
+                            steps.add(header);
+                            for (Spec.ProtoTableRow row : table.getRowsList()) {
+                                String rowContent = row.getCellsList().stream().collect(Collectors.joining("|", "||", ""));
+                                steps.add(rowContent);
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private boolean isConceptOrStep(Spec.ProtoItem protoItem) {
@@ -55,7 +64,7 @@ public class Tagged {
         comments = itemsList.stream()
                 .filter(this::isComment)
                 .map(Spec.ProtoItem::getComment)
-                .map(Spec.ProtoComment::getText)
+                .map(Spec.ProtoComment::getText).filter(s -> !isNullOrEmpty(s.trim()))
                 .collect(Collectors.toList());
     }
 

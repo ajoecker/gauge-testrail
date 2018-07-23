@@ -1,12 +1,15 @@
 package de.nexible.gauge.testrail.sync;
 
 import com.google.common.collect.ImmutableList;
+import com.gurock.testrail.APIClient;
 import com.thoughtworks.gauge.Spec;
+import de.nexible.gauge.testrail.config.TestRailContext;
 import de.nexible.gauge.testrail.sync.model.GaugeSpec;
 import de.nexible.gauge.testrail.sync.model.Tagged;
 import de.nexible.gauge.testrail.sync.sync.SpecModifier;
 import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
+import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -16,6 +19,8 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class SpecModifierTest {
+    private TestRailContext context = new TestSyncContext(Mockito.mock(APIClient.class));
+
     @Test
     @DisplayName("A scenario without tags")
     public void scenarioNoTag() throws IOException {
@@ -27,7 +32,7 @@ public class SpecModifierTest {
                 "* step 2\n";
 
         Spec.ProtoSpec.Builder spec = spec(scenario(step("step 1"), step("step 2")));
-        SpecModifier specModifier = new TestSpecModifier("## a scenario", "tags: C1", "* step 1");
+        SpecModifier specModifier = new TestSpecModifier(context, "## a scenario", "tags: C1", "* step 1");
         verifyChange(spec, specModifier, s, defaultTagScenario());
     }
 
@@ -42,7 +47,7 @@ public class SpecModifierTest {
                 "* step 1\n" +
                 "* step 2\n";
         Spec.ProtoSpec.Builder spec = spec(scenario(step("step 1"), step("step 2"), "smoke"));
-        SpecModifier specModifier = new TestSpecModifier("## a scenario", "tags: smoke, C1", "* step 1");
+        SpecModifier specModifier = new TestSpecModifier(context, "## a scenario", "tags: smoke, C1", "* step 1");
         verifyChange(spec, specModifier, s, defaultTagScenario());
     }
 
@@ -59,7 +64,7 @@ public class SpecModifierTest {
                 "* step 2\n";
 
         Spec.ProtoSpec.Builder spec = spec(scenario(step("step 1"), step("step 2"), "smoke"));
-        SpecModifier specModifier = new TestSpecModifier("## a scenario", "", "", "tags: smoke, C1", "* step 1");
+        SpecModifier specModifier = new TestSpecModifier(context, "## a scenario", "", "", "tags: smoke, C1", "* step 1");
         verifyChange(spec, specModifier, s, defaultTagScenario());
     }
 
@@ -81,7 +86,7 @@ public class SpecModifierTest {
         Spec.ProtoItem scenaro2 = scenario(step("step 1"), step("step 2"), "smoke");
         Spec.ProtoSpec.Builder spec = spec(scenaro1, scenaro2);
 
-        SpecModifier specModifier = new TestSpecModifier("## a scenario with", "tags: smoke", "* step 1", "* step 2", "## a scenario", "tags: smoke, C1", "* step 1");
+        SpecModifier specModifier = new TestSpecModifier(context, "## a scenario with", "tags: smoke", "* step 1", "* step 2", "## a scenario", "tags: smoke, C1", "* step 1");
         verifyChange(spec, specModifier, s, defaultTagScenario());
     }
 
@@ -103,7 +108,7 @@ public class SpecModifierTest {
         Spec.ProtoItem scenaro2 = scenario(step("step 1"), step("step 2"), "smoke");
         Spec.ProtoSpec.Builder spec = spec(scenaro1, scenaro2);
 
-        SpecModifier specModifier = new TestSpecModifier("## a scenario with", "tags: smoke, C3", "* step 1", "* step 2", "## a scenario", "tags: smoke, C1", "* step 1");
+        SpecModifier specModifier = new TestSpecModifier(context, "## a scenario with", "tags: smoke, C3", "* step 1", "* step 2", "## a scenario", "tags: smoke, C1", "* step 1");
         verifyChange(spec, specModifier, s, defaultTagScenario(), tagScenario("a scenario with", "C3"));
     }
 
@@ -163,7 +168,8 @@ public class SpecModifierTest {
         private boolean called;
         private String[] args;
 
-        TestSpecModifier(String... args) {
+        TestSpecModifier(TestRailContext testRailContext, String... args) {
+            super(testRailContext);
             this.args = args;
         }
 

@@ -22,6 +22,7 @@ import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -128,6 +129,7 @@ public class TestRailSyncTest {
         protospec.addTags("section_25");
 
         when(client.sendGet("get_section/25")).thenReturn(buildResult("name", "a different spec heading"));
+        when(client.sendPost(eq("update_case/13"), any())).thenReturn(buildResult("id", "13"));
 
         GaugeSpec gaugeSpec = doTheSync(testRailSync, protospec);
         verify(client).sendPost("update_section/25", ImmutableMap.of("name", "the spec"));
@@ -159,6 +161,7 @@ public class TestRailSyncTest {
         protospec.addTags("section_25");
 
         when(client.sendGet("get_section/25")).thenReturn(buildResult("name", "a different spec heading"));
+        when(client.sendPost(eq("update_case/13"), any())).thenReturn(buildResult("id", "13"));
 
         doTheSync(testRailSync, protospec);
         verify(client).sendPost("update_section/25", ImmutableMap.of("name", "the spec"));
@@ -180,6 +183,7 @@ public class TestRailSyncTest {
         protospec.addTags("section_25");
 
         when(client.sendGet("get_section/25")).thenReturn(buildResult("name", "a spec"));
+        when(client.sendPost(eq("update_case/13"), any())).thenReturn(buildResult("id", "13"));
 
         GaugeSpec gaugeSpec = doTheSync(testRailSync, protospec);
 

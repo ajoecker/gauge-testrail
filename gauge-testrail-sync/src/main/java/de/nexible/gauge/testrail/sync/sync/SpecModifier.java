@@ -1,5 +1,6 @@
 package de.nexible.gauge.testrail.sync.sync;
 
+import de.nexible.gauge.testrail.config.TestRailContext;
 import de.nexible.gauge.testrail.sync.model.GaugeScenario;
 import de.nexible.gauge.testrail.sync.model.GaugeSpec;
 
@@ -12,24 +13,22 @@ import java.util.Optional;
 import static java.nio.file.Files.readAllLines;
 
 public class SpecModifier implements Sync {
+    private TestRailContext testRailContext;
+
+    public SpecModifier(TestRailContext testRailContext) {
+        this.testRailContext = testRailContext;
+    }
+
     @Override
     public List<GaugeSpec> sync(List<GaugeSpec> mods) {
+        if (testRailContext.isDryRun()) {
+            return mods;
+        }
         for (GaugeSpec gaugeSpec : mods) {
             Path specFile = gaugeSpec.getSpecFile();
             try {
                 List<String> lines = read(specFile);
-
-                for (int i = 0; i < lines.size(); i++) {
-                    String line = lines.get(i).trim();
-                    if (line.startsWith("##")) {
-                        Optional<GaugeScenario> t = gaugeSpec.findScenarioByName(line);
-                        if (t.isPresent() && t.get().hasBeenTagged()) {
-                            i = changeSpecFile(lines, i, t.get().getTag());
-                        }
-                    } else if (line.startsWith("#") && gaugeSpec.hasBeenTagged()) {
-                        i = changeSpecFile(lines, i, gaugeSpec.getTag());
-                    }
-                }
+                modifyLines(gaugeSpec, lines);
                 write(specFile, lines);
             } catch (IOException e) {
                 // TODO logger
@@ -37,6 +36,20 @@ public class SpecModifier implements Sync {
             }
         }
         return mods;
+    }
+
+    private void modifyLines(GaugeSpec gaugeSpec, List<String> lines) {
+        for (int i = 0; i < lines.size(); i++) {
+            String line = lines.get(i).trim();
+            if (line.startsWith("##")) {
+                Optional<GaugeScenario> t = gaugeSpec.findScenarioByName(line);
+                if (t.isPresent() && t.get().hasBeenTagged()) {
+                    i = changeSpecFile(lines, i, t.get().getTag());
+                }
+            } else if (line.startsWith("#") && gaugeSpec.hasBeenTagged()) {
+                i = changeSpecFile(lines, i, gaugeSpec.getTag());
+            }
+        }
     }
 
     private int changeSpecFile(List<String> lines, int i, String tag) {

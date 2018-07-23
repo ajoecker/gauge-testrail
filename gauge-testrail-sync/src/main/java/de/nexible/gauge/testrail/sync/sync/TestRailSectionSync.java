@@ -32,11 +32,13 @@ public class TestRailSectionSync implements Sync {
         for (GaugeSpec s : specData) {
             if (s.hasTag()) {
                 logger.info(() -> "'" + s.getHeading() + "' is already tagged (" + s.getTag() + "). Checking for updates");
-                checkForSectionUpdate(s);
+                if (!testRailContext.isDryRun()) {
+                    checkForSectionUpdate(s);
+                }
             } else {
                 try {
                     logger.info(() -> "'" + s.getHeading() + "' has no tag yet. Send to TestRail to get new");
-                    s.setTag(toSectionTag(createNewSection(s)));
+                    s.setTag(getSectionTag(s));
                     logger.info(() -> "'" + s.getHeading() + "' has now received tag: " + s.getTag());
                 } catch (IOException | APIException e) {
                     logger.log(Level.WARNING, e, () -> "Failed to sync section '" + s.getHeading() + "'");
@@ -46,6 +48,14 @@ public class TestRailSectionSync implements Sync {
             changedData.add(s);
         }
         return changedData;
+    }
+
+    private String getSectionTag(GaugeSpec s) throws IOException, APIException {
+        if (testRailContext.isDryRun()) {
+            logger.info(() -> "Running dry run - use artifical section tag");
+            return "section_100";
+        }
+        return toSectionTag(createNewSection(s));
     }
 
     private long createNewSection(GaugeSpec s) throws IOException, APIException {

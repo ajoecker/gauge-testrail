@@ -2,6 +2,7 @@ package de.nexible.gauge.testrail.sync.context;
 
 import de.nexible.gauge.testrail.config.TestRailDefaultContext;
 
+import static com.google.common.base.Strings.isNullOrEmpty;
 import static java.lang.Integer.parseInt;
 import static java.lang.System.getenv;
 
@@ -40,7 +41,7 @@ public class TestRailSyncDefaultContext extends TestRailDefaultContext implement
 
     private int read(String s) {
         String getenv = getenv(s);
-        if (getenv == null || getenv.equals("")) {
+        if (isNullOrEmpty(getenv)) {
             return UNKNOWN;
         }
         return parseInt(getenv.trim());

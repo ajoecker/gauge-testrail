@@ -12,7 +12,6 @@ import de.nexible.gauge.testrail.sync.sync.Sync;
 import de.nexible.gauge.testrail.sync.sync.TestRailCaseSync;
 import de.nexible.gauge.testrail.sync.sync.TestRailSectionSync;
 
-import java.io.IOException;
 import java.util.List;
 
 import static de.nexible.gauge.testrail.sync.GaugeSpecRetrieval.retrieveSpecs;
@@ -26,7 +25,7 @@ public class TestRailSync implements Sync {
 
     public static void main(String[] args) {
         TestRailSyncContext testRailContext = new TestRailSyncDefaultContext();
-        GaugeTestRailLogger.initializeLogger(new GaugeDefaultContext(), "testrail-sync.log");
+        GaugeTestRailLogger.initializeLogger(new GaugeDefaultContext(), "testrail-sync.log", testRailContext.getLogLevel());
         List<GaugeSpec> specs = getSpecs(testRailContext);
         new TestRailSync(testRailContext).sync(specs);
     }
@@ -39,6 +38,6 @@ public class TestRailSync implements Sync {
     public List<GaugeSpec> sync(List<GaugeSpec> specData) {
         List<GaugeSpec> specList = new TestRailSectionSync(testRailContext).sync(specData);
         specList = new TestRailCaseSync(testRailContext).sync(specList);
-        return new SpecModifier().sync(specList);
+        return new SpecModifier(testRailContext).sync(specList);
     }
 }

@@ -12,7 +12,7 @@ import java.io.InputStream;
 import java.net.URL;
 
 import static de.nexible.gauge.testrail.sync.GaugeSpecRetrieval.retrieveSpecs;
-import static de.nexible.gauge.testrail.sync.sync.SyncUtil.getCaseText;
+import static de.nexible.gauge.testrail.sync.sync.CaseFormatter.getCaseText;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class GaugeSpecRetrievalTest {
@@ -78,11 +78,11 @@ public class GaugeSpecRetrievalTest {
 
     @Test
     public void conceptandCommentsAreConsidered() throws IOException {
-        String expected = "ein spec kommentar\n" +
-                "in zwei Zeilen\n" +
+        String expected = "_ein spec kommentar_\n" +
+                "_in zwei Zeilen_\n" +
+                "_ein scenario kommentar_\n" +
+                "_in zwei Zeilen_\n" +
                 "\n" +
-                "ein scenario kommentar\n" +
-                "in zwei Zeilen\n" +
                 "* Öffne die backoffice Testumgebung\n" +
                 "* Login mit test user\n" +
                 "* Lade Vertragsdaten aus <file:/data/contract_basis.yaml>\n" +
@@ -94,6 +94,28 @@ public class GaugeSpecRetrievalTest {
             Spec.ProtoSpec protoSpec = Spec.ProtoSpec.parseFrom(ins);
             GaugeSpec gaugeSpecs = retrieveSpecs(ImmutableList.of(protoSpec)).get(0);
             String caseText = getCaseText(gaugeSpecs, gaugeSpecs.getScenarios().get(0));
+            assertThat(caseText).isEqualTo(expected);
+        }
+    }
+
+    @Test
+    public void inlineTableIsReadAndCorrectlyFormatted() throws IOException {
+        String expected = "_Testet, dass die folgenden Regeln gelten_\n" +
+                "_Haftpflichtschäden >= 4 --> nur Haftpflicht_\n" +
+                "_TK Schäden + VK Schäden >= 6 --> nur Haftpflicht_\n" +
+                "\n" +
+                "* Öffne die nexible.de Testumgebung\n" +
+                "* Starte die Antragsstrecke\n" +
+                "* Überprüfe, dass die folgende Schadenskombinationen das korrekte Angebot forsiert\n" +
+                "|||:Haftpflicht|:Teilkasko|:Vollkasko|:Angebot\n" +
+                "||0|0|0|Haftpflicht, Teilkasko, Vollkasko\n" +
+                "||4|0|0|Haftpflicht";
+
+        URL resources = GaugeSpecRetrievalTest.class.getResource("/spec_with_table.serialised");
+        try(InputStream ins = resources.openStream()) {
+            Spec.ProtoSpec protoSpec = Spec.ProtoSpec.parseFrom(ins);
+            GaugeSpec gaugeSpec = retrieveSpecs(ImmutableList.of(protoSpec)).get(0);
+            String caseText = getCaseText(gaugeSpec, gaugeSpec.getScenarios().get(0));
             assertThat(caseText).isEqualTo(expected);
         }
     }

@@ -2,7 +2,6 @@ package de.nexible.gauge.testrail.sync.sync;
 
 import com.gurock.testrail.APIClient;
 import com.gurock.testrail.APIException;
-import de.nexible.gauge.testrail.config.TestRailUtil;
 import de.nexible.gauge.testrail.sync.context.TestRailSyncContext;
 import de.nexible.gauge.testrail.sync.model.GaugeScenario;
 import de.nexible.gauge.testrail.sync.model.GaugeSpec;
@@ -16,7 +15,7 @@ import java.util.logging.Logger;
 
 import static de.nexible.gauge.testrail.config.TestRailUtil.parseCaseId;
 import static de.nexible.gauge.testrail.config.TestRailUtil.parseSectionId;
-import static de.nexible.gauge.testrail.sync.sync.SyncUtil.getCaseText;
+import static de.nexible.gauge.testrail.sync.sync.CaseFormatter.getCaseText;
 
 public class TestRailCaseSync implements Sync {
     private static final Logger logger = Logger.getLogger(TestRailCaseSync.class.getName());
@@ -43,15 +42,26 @@ public class TestRailCaseSync implements Sync {
         List<String> allSteps = new ArrayList<>(spec.getSteps());
         allSteps.addAll(scenario.getSteps());
         try {
-            JSONObject postResult = (JSONObject) testRailClient.sendPost(sendTo, buildDataObject(getCaseText(spec, scenario), scenario.getHeading()));
+            String caseTag = getCaseTag(testRailClient, spec, scenario, sendTo);
             if (!scenario.hasTag()) {
-                scenario.setTag("C" + postResult.get("id"));
+                scenario.setTag(caseTag);
                 logger.info(() -> "Scenario '" + scenario.getHeading() + "' now has tag " + scenario.getTag());
             }
         } catch (IOException | APIException e) {
             logger.log(Level.WARNING, e, () -> "Failed to update scenario '" + scenario.getHeading() + "'");
         }
         return scenario;
+    }
+
+    private String getCaseTag(APIClient testRailClient, GaugeSpec spec, GaugeScenario scenario, String sendTo) throws IOException, APIException {
+        JSONObject data = buildDataObject(getCaseText(spec, scenario), scenario.getHeading());
+        if (testRailContext.isDryRun()) {
+            logger.info(() -> "Dry run, use artifical case tag");
+            System.out.println("Would send " + data);
+            return "C999";
+        }
+        JSONObject postResult = (JSONObject) testRailClient.sendPost(sendTo, data);
+        return "C" + postResult.get("id");
     }
 
     private JSONObject buildDataObject(String text, String heading) {
