@@ -5,6 +5,7 @@ import com.gurock.testrail.APIException;
 import de.nexible.gauge.testrail.sync.context.TestRailSyncContext;
 import de.nexible.gauge.testrail.sync.model.GaugeScenario;
 import de.nexible.gauge.testrail.sync.model.GaugeSpec;
+import de.nexible.gauge.testrail.sync.model.StepItem;
 import org.json.simple.JSONObject;
 
 import java.io.IOException;
@@ -39,8 +40,6 @@ public class TestRailCaseSync implements Sync {
     private GaugeScenario sendToTestRail(APIClient testRailClient, GaugeSpec spec, GaugeScenario scenario) {
         String sendTo = scenario.hasTag() ? updateCase(parseCaseId(scenario.getTag())) : addCase(parseSectionId(spec.getTag()));
         logger.info(() -> "Scenario '" + scenario.getHeading() + "' uses " + sendTo);
-        List<String> allSteps = new ArrayList<>(spec.getSteps());
-        allSteps.addAll(scenario.getSteps());
         try {
             String caseTag = getCaseTag(testRailClient, spec, scenario, sendTo);
             if (!scenario.hasTag()) {

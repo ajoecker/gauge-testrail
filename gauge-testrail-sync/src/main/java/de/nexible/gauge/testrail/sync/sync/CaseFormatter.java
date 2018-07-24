@@ -2,6 +2,7 @@ package de.nexible.gauge.testrail.sync.sync;
 
 import de.nexible.gauge.testrail.sync.model.GaugeScenario;
 import de.nexible.gauge.testrail.sync.model.GaugeSpec;
+import de.nexible.gauge.testrail.sync.model.StepItem;
 
 import java.util.List;
 import java.util.function.Function;
@@ -22,7 +23,7 @@ public class CaseFormatter {
         return comments.append(steps).toString();
     }
 
-    private static StringBuilder format(Function<List<String>, String> formatter, List<String> specData, List<String> scenarioData) {
+    private static StringBuilder format(Function<List<StepItem>, String> formatter, List<StepItem> specData, List<StepItem> scenarioData) {
         StringBuilder steps = new StringBuilder();
         steps.append(formatter.apply(specData));
         if (steps.length() > 0) {
@@ -32,15 +33,15 @@ public class CaseFormatter {
         return steps;
     }
 
-    private static String formatComments(List<String> comments) {
+    private static String formatComments(List<StepItem> comments) {
         return format(comments, s -> "_" + s + "_");
     }
 
-    private static String formatSteps(List<String> steps) {
-        return format(steps, s -> s.startsWith("||") ? s : "* " + s);
+    private static String formatSteps(List<StepItem> steps) {
+        return format(steps, s -> s.step().startsWith("||") ? s : "* " + s);
     }
 
-    private static String format(List<String> data, Function<String, String> mapper) {
+    private static String format(List<StepItem> data, Function<StepItem, String> mapper) {
         if (data.isEmpty()) {
             return "";
         }

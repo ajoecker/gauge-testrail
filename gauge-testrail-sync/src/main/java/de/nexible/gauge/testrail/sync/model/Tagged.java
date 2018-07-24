@@ -4,44 +4,62 @@ import com.thoughtworks.gauge.Spec;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Queue;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static com.google.common.base.Strings.*;
+import static de.nexible.gauge.testrail.sync.model.StepItem.newStepItem;
 
 public class Tagged {
     protected String heading;
     protected Optional<String> tag;
-    protected List<String> steps;
-    protected List<String> comments;
+    protected List<StepItem> steps;
+    protected List<StepItem> comments;
     private boolean hasChanged;
 
     protected final void setSteps(List<Spec.ProtoItem> protoItems) {
         steps = new ArrayList<>();
-        for (Spec.ProtoItem protoItem : protoItems) {
-            if (isConceptOrStep(protoItem)) {
-                Spec.ProtoStep protoStep = extractStep(protoItem);
-                steps.add(protoStep.getActualText());
-                for (Spec.Fragment fr : protoStep.getFragmentsList()) {
-                    if (fr.getFragmentType() == Spec.Fragment.FragmentType.Parameter) {
-                        Spec.Parameter parameter = fr.getParameter();
-                        if (parameter.getParameterType() == Spec.Parameter.ParameterType.Table) {
-                            Spec.ProtoTable table = parameter.getTable();
-                            Spec.ProtoTableRow headers = table.getHeaders();
-                            String header = headers.getCellsList().stream().collect(Collectors.joining("|:", "|||:", ""));
-                            steps.add(header);
-                            for (Spec.ProtoTableRow row : table.getRowsList()) {
-                                String rowContent = row.getCellsList().stream().collect(Collectors.joining("|", "||", ""));
-                                steps.add(rowContent);
-                            }
-                        }
+        Queue<Spec.ProtoItem> items = new LinkedList<>(protoItems);
+        Spec.ProtoItem item;
+
+        while ((item = items.poll()) != null) {
+            Spec.ProtoStep step = Spec.ProtoStep.newBuilder().build();
+
+            if (item.getItemType() == Spec.ProtoItem.ItemType.Step) {
+                step = item.getStep();
+                steps.add(newStepItem(step.getActualText(),0));
+            } else if (item.getItemType() == Spec.ProtoItem.ItemType.Concept) {
+                Spec.ProtoConcept concept = item.getConcept();
+                step = concept.getConceptStep();
+                steps.add(newStepItem(step.getActualText(),0));
+                concept.getStepsList().forEach(items::add);
+            }
+
+            step.getFragmentsList().stream().filter(fragment -> fragment.getFragmentType() == Spec.Fragment.FragmentType.Parameter).forEach(fragment -> {
+                Spec.Parameter parameter = fragment.getParameter();
+                if (parameter.getParameterType() == Spec.Parameter.ParameterType.Table) {
+                    Spec.ProtoTable table = parameter.getTable();
+                    Spec.ProtoTableRow headers = table.getHeaders();
+                    String header = headers.getCellsList().stream().collect(Collectors.joining("|:", "|||:", ""));
+                    steps.add(newStepItem(header, 0));
+                    for (Spec.ProtoTableRow row : table.getRowsList()) {
+                        String rowContent = row.getCellsList().stream().collect(Collectors.joining("|", "||", ""));
+                        steps.add(newStepItem(rowContent, 0));
                     }
                 }
-            }
+                else if (parameter.getParameterType() == Spec.Parameter.ParameterType.Special_String) {
+                    String parameterValue = parameter.getValue();
+                    System.out.println(parameterValue);
+                }
+            });
         }
+
+        steps.forEach(System.out::println);//        }
     }
 
     private boolean isConceptOrStep(Spec.ProtoItem protoItem) {
@@ -56,7 +74,7 @@ public class Tagged {
         return protoItem.getItemType() == Spec.ProtoItem.ItemType.Step ? protoItem.getStep() : protoItem.getConcept().getConceptStep();
     }
 
-    public final List<String> getComments() {
+    public final List<StepItem> getComments() {
         return Collections.unmodifiableList(comments);
     }
 
@@ -64,11 +82,11 @@ public class Tagged {
         comments = itemsList.stream()
                 .filter(this::isComment)
                 .map(Spec.ProtoItem::getComment)
-                .map(Spec.ProtoComment::getText).filter(s -> !isNullOrEmpty(s.trim()))
+                .map(Spec.ProtoComment::getText).filter(s -> !isNullOrEmpty(s.trim())).map(StepItem::newStepItem)
                 .collect(Collectors.toList());
     }
 
-    public final List<String> getSteps() {
+    public final List<StepItem> getSteps() {
         return Collections.unmodifiableList(steps);
     }
 
