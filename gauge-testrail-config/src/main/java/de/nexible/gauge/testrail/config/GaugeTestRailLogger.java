@@ -37,7 +37,6 @@ public class GaugeTestRailLogger {
             logger.setUseParentHandlers(false);
             logger.addHandler(fileHandler);
 
-
             Logger.getLogger(GaugeTestRailLogger.class.getName()).info(() -> "Logging initialized. Logging into " + logFile);
         } catch (IOException e) {
             System.err.println("Failed to initialize logger, due to:");

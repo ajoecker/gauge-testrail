@@ -18,14 +18,4 @@ public class TestRailReportDefaultContext extends TestRailDefaultContext impleme
     public String getTestRailRunId() {
         return System.getenv("testrail.run.id");
     }
-
-    @Override
-    public void dump(Path output) throws IOException {
-        try (PrintWriter pw = new PrintWriter(Files.newBufferedWriter(output))) {
-            pw.println("testrail.url = " + System.getenv("testrail.url"));
-            pw.println("testrail.token = " + System.getenv("testrail.token"));
-            pw.println("testrail.user = " + System.getenv("testrail.user"));
-            pw.println("testrail.run.id = " + System.getenv("testrail.run.id"));
-        }
-    }
 }

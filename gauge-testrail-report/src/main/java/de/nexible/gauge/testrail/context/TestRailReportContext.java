@@ -7,6 +7,4 @@ import java.nio.file.Path;
 
 public interface TestRailReportContext extends TestRailContext {
     String getTestRailRunId();
-
-    void dump(Path output) throws IOException;
 }

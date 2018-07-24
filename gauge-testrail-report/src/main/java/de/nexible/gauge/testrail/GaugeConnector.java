@@ -8,14 +8,16 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
+import static de.nexible.gauge.testrail.TestRailTimespanHandler.toTimeFormat;
 import static java.lang.Integer.parseInt;
 import static java.lang.System.getenv;
 import static java.lang.System.setOut;
 
 /**
- * The {@link GaugeConnector} opens a socket to listen to gauge events and propagates the event SuiteExecutionResult to {@link TestRailHandler}
+ * The {@link GaugeConnector} opens a socket to listen to gauge events and propagates the event
  *
  * @author ajoecker
  */
@@ -25,6 +27,7 @@ public class GaugeConnector {
 
     private Socket socket;
     private List<GaugeResultListener> gaugeResultListeners = new ArrayList<>();
+    private ConcurrentHashMap<String, Long> scenarioStartTime = new ConcurrentHashMap<>();
 
     void addGaugeResultListener(GaugeResultListener gaugeResultListener) {
         this.gaugeResultListeners.add(gaugeResultListener);
@@ -47,7 +50,7 @@ public class GaugeConnector {
     }
 
     /**
-     * Listens to the socket and reacts on the suite execution result to propagate this to {@link TestRailHandler}
+     * Listens to the socket and reacts on the suite execution result to propagate
      *
      * @throws IOException
      * @throws APIException
@@ -61,20 +64,23 @@ public class GaugeConnector {
         try {
             while (!socket.isClosed() && socket.isConnected()) {
                 Messages.Message message = Messages.Message.parseDelimitedFrom(socket.getInputStream());
-                if (message.getMessageType() == Messages.Message.MessageType.SuiteExecutionResult) {
-                    handleSuiteResult(message);
+                if (message.getMessageType() == Messages.Message.MessageType.ScenarioExecutionStarting) {
+                    scenarioStartTime.put(message.getScenarioExecutionStartingRequest().getCurrentExecutionInfo().getCurrentScenario().getName(), System.currentTimeMillis());
+                } else if (message.getMessageType() == Messages.Message.MessageType.ScenarioExecutionEnding) {
+                    String stacktrace = message.getExecutionEndingRequest().getCurrentExecutionInfo().getStacktrace(); // this is empty
+                    Spec.ProtoExecutionResult executionResult = message.getExecutionStatusResponse().getExecutionResult(); // this is empty
+                    // executionResult would contain information about reason of failure or execution time
+                    Messages.ScenarioInfo scenario = message.getScenarioExecutionEndingRequest().getCurrentExecutionInfo().getCurrentScenario();
+                    boolean isFailed = scenario.getIsFailed(); // is the only information available
+
+                } else if (message.getMessageType() == Messages.Message.MessageType.ExecutionStatusResponse) {
+                    // this is never called
+                } else if (message.getMessageType() == Messages.Message.MessageType.SuiteExecutionResult) {
                     return;
                 }
             }
         } finally {
             socket.close();
         }
-    }
-
-    private void handleSuiteResult(Messages.Message message) {
-        logger.info(() -> "retrieved suite execution result message");
-        Messages.SuiteExecutionResult executionResult = message.getSuiteExecutionResult();
-        Spec.ProtoSuiteResult suiteResult = executionResult.getSuiteResult();
-        gaugeResultListeners.stream().forEach(l -> l.gaugeResult(suiteResult));
     }
 }
