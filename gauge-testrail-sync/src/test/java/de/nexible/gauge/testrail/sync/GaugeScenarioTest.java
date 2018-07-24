@@ -2,6 +2,7 @@ package de.nexible.gauge.testrail.sync;
 
 import com.thoughtworks.gauge.Spec;
 import de.nexible.gauge.testrail.sync.model.GaugeScenario;
+import de.nexible.gauge.testrail.sync.model.StepItem;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -18,7 +19,7 @@ public class GaugeScenarioTest {
         GaugeScenario gaugeScenario = GaugeScenario.newInstance(scenario);
 
         assertAll("scenario",
-                () -> assertThat(gaugeScenario.getSteps()).containsOnly("step1"),
+                () -> assertThat(gaugeScenario.getSteps()).extracting(StepItem::step).containsOnly("step1"),
                 () ->assertThat(gaugeScenario.hasTag()).isFalse(),
                 () -> assertThat(gaugeScenario.getHeading()).isEqualTo("a scenario"));
     }
@@ -32,7 +33,7 @@ public class GaugeScenarioTest {
         GaugeScenario gaugeScenario = GaugeScenario.newInstance(scenario);
 
         assertAll("scenario",
-                () -> assertThat(gaugeScenario.getSteps()).containsOnly("step1"),
+                () -> assertThat(gaugeScenario.getSteps()).extracting(StepItem::step).containsOnly("step1"),
                 () ->assertThat(gaugeScenario.hasTag()).isTrue(),
                 () -> assertThat(gaugeScenario.getHeading()).isEqualTo("a scenario"));
     }
@@ -46,7 +47,7 @@ public class GaugeScenarioTest {
         GaugeScenario gaugeScenario = GaugeScenario.newInstance(scenario);
 
         assertAll("scenario",
-                () -> assertThat(gaugeScenario.getSteps()).containsOnly("step1"),
+                () -> assertThat(gaugeScenario.getSteps()).extracting(StepItem::step).containsOnly("step1"),
                 () ->assertThat(gaugeScenario.hasTag()).isFalse(),
                 () -> assertThat(gaugeScenario.getHeading()).isEqualTo("a scenario"));
     }
@@ -62,7 +63,7 @@ public class GaugeScenarioTest {
         GaugeScenario gaugeScenario = GaugeScenario.newInstance(scenario);
 
         assertAll("scenario",
-                () -> assertThat(gaugeScenario.getSteps()).containsOnly("step1", "teardown"),
+                () -> assertThat(gaugeScenario.getSteps()).extracting(StepItem::step).containsOnly("step1", "teardown"),
                 () ->assertThat(gaugeScenario.hasTag()).isFalse(),
                 () -> assertThat(gaugeScenario.getHeading()).isEqualTo("a scenario"));
     }

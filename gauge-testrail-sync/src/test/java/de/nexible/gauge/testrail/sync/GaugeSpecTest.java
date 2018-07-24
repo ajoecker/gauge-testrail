@@ -3,6 +3,7 @@ package de.nexible.gauge.testrail.sync;
 import com.thoughtworks.gauge.Spec;
 import de.nexible.gauge.testrail.sync.model.GaugeScenario;
 import de.nexible.gauge.testrail.sync.model.GaugeSpec;
+import de.nexible.gauge.testrail.sync.model.StepItem;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Paths;
@@ -59,7 +60,7 @@ public class GaugeSpecTest {
                 () -> assertThat(gaugeSpec.getSpecFile()).isEqualTo(Paths.get("specFile")),
                 () -> assertThat(gaugeSpec.getHeading()).isEqualTo("a spec"),
                 () -> assertThat(gaugeSpec.hasTag()).isFalse(),
-                () -> assertThat(gaugeSpec.getSteps()).containsOnly("a step"));
+                () -> assertThat(gaugeSpec.getSteps()).extracting(StepItem::step).containsOnly("a step"));
     }
 
     @Test

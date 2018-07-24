@@ -34,11 +34,18 @@ public class CaseFormatter {
     }
 
     private static String formatComments(List<StepItem> comments) {
-        return format(comments, s -> "_" + s + "_");
+        return format(comments, s -> "_" + s.step() + "_");
     }
 
     private static String formatSteps(List<StepItem> steps) {
-        return format(steps, s -> s.step().startsWith("||") ? s : "* " + s);
+        return format(steps, s -> s.step().startsWith("||") ? s.step() : formatStepWithLevel(s));
+    }
+
+    private static String formatStepWithLevel(StepItem stepItem) {
+        if (stepItem.level() == 0) {
+            return "* " + stepItem.step();
+        }
+        return String.format("%" + stepItem.level() * 4 + "s* %s", "", stepItem.step());
     }
 
     private static String format(List<StepItem> data, Function<StepItem, String> mapper) {

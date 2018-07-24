@@ -87,14 +87,36 @@ public class GaugeSpecRetrievalTest {
                 "* Login mit test user\n" +
                 "* Lade Vertragsdaten aus <file:/data/contract_basis.yaml>\n" +
                 "* Erstelle einen neuen Vertrag\n" +
-                "* Überprüfe, dass das Prämienkonto die korrekte Anzahl von Buchungen hat";
+                "    * Erstelle einen neuen Vorschlag\n" +
+                "        * Öffne Vorschlagsanlage\n" +
+                "        * Setze persönliche Daten für Vorschlag\n" +
+                "        * Setze Vertragsdaten\n" +
+                "        * Lege einen neuen Vorschlag an\n" +
+                "    * Öffne Vorschläge und suche den neu erstellten Vorschlag\n" +
+                "    * Beantrage den Vorschlag\n" +
+                "    * Öffne Anträge\n" +
+                "    * Überprüfe, den beantragten Vorschlag finden zu können\n" +
+                "    * Policiere den neu erstellten Antrag\n" +
+                "    * Öffne Verträge\n" +
+                "    * Überprüfe, den policierten Vertrag finden zu können\n" +
+                "    * Führe den job \"renewal\" in sidekiq aus\n" +
+                "        * Öffne System unter Administration\n" +
+                "        * Öffne Sidekiq view\n" +
+                "        * Öffne Cron jobs\n" +
+                "        * Start Sidekiq job <job>\n" +
+                "        * Verlasse Sidekiq view\n" +
+                "* Überprüfe, dass das Prämienkonto die korrekte Anzahl von Buchungen hat\n" +
+                "    * Öffne den neuen Vertrag\n" +
+                "    * Ermittel prämienrelevante Attribute des Vertrags\n" +
+                "    * Öffne das Prämienkonto\n" +
+                "    * Überprüfe, dass die korrekt Anzahl von Buchungen vorhanden ist";
 
         URL resource = GaugeSpecRetrievalTest.class.getResource("/spec.serialised");
         try (InputStream ins = resource.openStream()) {
             Spec.ProtoSpec protoSpec = Spec.ProtoSpec.parseFrom(ins);
             GaugeSpec gaugeSpecs = retrieveSpecs(ImmutableList.of(protoSpec)).get(0);
             String caseText = getCaseText(gaugeSpecs, gaugeSpecs.getScenarios().get(0));
-            //assertThat(caseText).isEqualTo(expected);
+            assertThat(caseText).isEqualTo(expected);
         }
     }
 
@@ -116,7 +138,7 @@ public class GaugeSpecRetrievalTest {
             Spec.ProtoSpec protoSpec = Spec.ProtoSpec.parseFrom(ins);
             GaugeSpec gaugeSpec = retrieveSpecs(ImmutableList.of(protoSpec)).get(0);
             String caseText = getCaseText(gaugeSpec, gaugeSpec.getScenarios().get(0));
-            //assertThat(caseText).isEqualTo(expected);
+            assertThat(caseText).isEqualTo(expected);
         }
     }
 

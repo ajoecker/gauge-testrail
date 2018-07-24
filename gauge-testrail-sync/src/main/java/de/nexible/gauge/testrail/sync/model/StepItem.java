@@ -30,4 +30,8 @@ public class StepItem {
     public String step() {
         return step;
     }
+
+    public int level() {
+        return level;
+    }
 }
