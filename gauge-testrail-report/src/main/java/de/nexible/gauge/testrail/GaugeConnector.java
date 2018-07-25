@@ -67,14 +67,9 @@ public class GaugeConnector {
                 if (message.getMessageType() == Messages.Message.MessageType.ScenarioExecutionStarting) {
                     scenarioStartTime.put(message.getScenarioExecutionStartingRequest().getCurrentExecutionInfo().getCurrentScenario().getName(), System.currentTimeMillis());
                 } else if (message.getMessageType() == Messages.Message.MessageType.ScenarioExecutionEnding) {
-                    String stacktrace = message.getExecutionEndingRequest().getCurrentExecutionInfo().getStacktrace(); // this is empty
-                    Spec.ProtoExecutionResult executionResult = message.getExecutionStatusResponse().getExecutionResult(); // this is empty
-                    // executionResult would contain information about reason of failure or execution time
                     Messages.ScenarioInfo scenario = message.getScenarioExecutionEndingRequest().getCurrentExecutionInfo().getCurrentScenario();
-                    boolean isFailed = scenario.getIsFailed(); // is the only information available
+                    gaugeResultListeners.forEach(l -> l.gaugeResult(scenario, TestRailTimespanHandler.toTimeFormat(System.currentTimeMillis() - scenarioStartTime.get(scenario.getName()))));
 
-                } else if (message.getMessageType() == Messages.Message.MessageType.ExecutionStatusResponse) {
-                    // this is never called
                 } else if (message.getMessageType() == Messages.Message.MessageType.SuiteExecutionResult) {
                     return;
                 }

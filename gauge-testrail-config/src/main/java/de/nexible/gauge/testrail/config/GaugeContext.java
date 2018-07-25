@@ -10,13 +10,6 @@ public interface GaugeContext {
     String getGaugeProjectRoot();
 
     /**
-     * Returns the name of the report directory
-     *
-     * @return
-     */
-    String getGaugeReportsDir();
-
-    /**
      * Returns the name of the log directory
      *
      * @return

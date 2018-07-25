@@ -38,7 +38,11 @@ public class CaseFormatter {
     }
 
     private static String formatSteps(List<StepItem> steps) {
-        return format(steps, s -> s.step().startsWith("||") ? s.step() : formatStepWithLevel(s));
+        return format(steps, s -> isInlineTable(s) ? s.step() : formatStepWithLevel(s));
+    }
+
+    private static boolean isInlineTable(StepItem s) {
+        return s.step().startsWith("||");
     }
 
     private static String formatStepWithLevel(StepItem stepItem) {

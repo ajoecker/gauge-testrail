@@ -8,6 +8,8 @@ import de.nexible.gauge.testrail.context.TestRailReportDefaultContext;
 
 import java.io.IOException;
 
+import static de.nexible.gauge.testrail.config.GaugeTestRailLogger.initializeLogger;
+
 /**
  * Accesspoint for the plugin.
  *
@@ -19,14 +21,10 @@ public class GaugeTestRail {
     }
 
     private void run() throws IOException {
-        GaugeContext gaugeContext = new GaugeDefaultContext();
         TestRailReportContext testRailContext = new TestRailReportDefaultContext();
-        GaugeTestRailLogger.initializeLogger(gaugeContext, "testrail.log", testRailContext.getLogLevel());
-
-        GaugeResultListener testRailHandler = new TestRailDefaultHandler(testRailContext);
-
+        initializeLogger(new GaugeDefaultContext(), "testrail.log", testRailContext.getLogLevel());
         GaugeConnector gaugeConnector = new GaugeConnector();
-        gaugeConnector.addGaugeResultListener(testRailHandler);
+        gaugeConnector.addGaugeResultListener(new TestRailDefaultHandler(testRailContext));
         gaugeConnector.connect();
         gaugeConnector.listen();
     }

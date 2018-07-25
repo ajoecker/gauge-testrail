@@ -2,6 +2,7 @@ package de.nexible.gauge.testrail;
 
 import com.gurock.testrail.APIClient;
 import com.gurock.testrail.APIException;
+import com.gurock.testrail.TestRailClient;
 import com.thoughtworks.gauge.Messages;
 import com.thoughtworks.gauge.Spec;
 import de.nexible.gauge.testrail.context.TestRailReportContext;
@@ -92,8 +93,8 @@ public class TestRailHandlerTestDefault {
             return testrunId;
         }
 
-        public APIClient getTestRailClient() {
-            return apiClient;
+        public TestRailClient getTestRailClient() {
+            return new TestRailClient(apiClient);
         }
     }
 }

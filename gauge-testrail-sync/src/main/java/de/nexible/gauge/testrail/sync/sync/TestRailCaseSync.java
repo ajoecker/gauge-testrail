@@ -1,15 +1,12 @@
 package de.nexible.gauge.testrail.sync.sync;
 
-import com.gurock.testrail.APIClient;
 import com.gurock.testrail.APIException;
 import de.nexible.gauge.testrail.sync.context.TestRailSyncContext;
 import de.nexible.gauge.testrail.sync.model.GaugeScenario;
 import de.nexible.gauge.testrail.sync.model.GaugeSpec;
-import de.nexible.gauge.testrail.sync.model.StepItem;
 import org.json.simple.JSONObject;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -30,18 +27,15 @@ public class TestRailCaseSync implements Sync {
     @Override
     public List<GaugeSpec> sync(List<GaugeSpec> specData) {
         logger.info(() -> "Sync test cases");
-        APIClient testRailClient = testRailContext.getTestRailClient();
         for (GaugeSpec gaugeSpec : specData) {
-            gaugeSpec.getScenarios().stream().forEach(gaugeScenario -> sendToTestRail(testRailClient, gaugeSpec, gaugeScenario));
+            gaugeSpec.getScenarios().stream().forEach(gaugeScenario -> sendToTestRail(gaugeSpec, gaugeScenario));
         }
         return specData;
     }
 
-    private GaugeScenario sendToTestRail(APIClient testRailClient, GaugeSpec spec, GaugeScenario scenario) {
-        String sendTo = scenario.hasTag() ? updateCase(parseCaseId(scenario.getTag())) : addCase(parseSectionId(spec.getTag()));
-        logger.info(() -> "Scenario '" + scenario.getHeading() + "' uses " + sendTo);
+    private GaugeScenario sendToTestRail(GaugeSpec spec, GaugeScenario scenario) {
         try {
-            String caseTag = getCaseTag(testRailClient, spec, scenario, sendTo);
+            String caseTag = getCaseTag(spec, scenario);
             if (!scenario.hasTag()) {
                 scenario.setTag(caseTag);
                 logger.info(() -> "Scenario '" + scenario.getHeading() + "' now has tag " + scenario.getTag());
@@ -52,15 +46,17 @@ public class TestRailCaseSync implements Sync {
         return scenario;
     }
 
-    private String getCaseTag(APIClient testRailClient, GaugeSpec spec, GaugeScenario scenario, String sendTo) throws IOException, APIException {
+    private String getCaseTag(GaugeSpec spec, GaugeScenario scenario) throws IOException, APIException {
         JSONObject data = buildDataObject(getCaseText(spec, scenario), scenario.getHeading());
         if (testRailContext.isDryRun()) {
             logger.info(() -> "Dry run, use artifical case tag");
             System.out.println("Would send " + data);
             return "C999";
         }
-        JSONObject postResult = (JSONObject) testRailClient.sendPost(sendTo, data);
-        return "C" + postResult.get("id");
+        if (scenario.hasTag()) {
+            return testRailContext.getTestRailClient().updateCase(parseCaseId(scenario.getTag()), data);
+        }
+        return testRailContext.getTestRailClient().addCase(parseSectionId(spec.getTag()), data);
     }
 
     private JSONObject buildDataObject(String text, String heading) {
@@ -73,13 +69,5 @@ public class TestRailCaseSync implements Sync {
             data.put("custom_automation_type", automationId);
         }
         return data;
-    }
-
-    private String updateCase(int caseId) {
-        return "update_case/" + caseId;
-    }
-
-    private String addCase(int sectionId) {
-        return "add_case/" + sectionId;
     }
 }

@@ -24,6 +24,11 @@ public class SpecModifier implements Sync {
         if (testRailContext.isDryRun()) {
             return mods;
         }
+        modifiesSpec(mods);
+        return mods;
+    }
+
+    private void modifiesSpec(List<GaugeSpec> mods) {
         for (GaugeSpec gaugeSpec : mods) {
             Path specFile = gaugeSpec.getSpecFile();
             try {
@@ -35,7 +40,6 @@ public class SpecModifier implements Sync {
                 e.printStackTrace();
             }
         }
-        return mods;
     }
 
     private void modifyLines(GaugeSpec gaugeSpec, List<String> lines) {

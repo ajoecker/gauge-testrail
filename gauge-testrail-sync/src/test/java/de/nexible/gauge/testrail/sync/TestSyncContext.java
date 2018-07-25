@@ -1,6 +1,7 @@
 package de.nexible.gauge.testrail.sync;
 
 import com.gurock.testrail.APIClient;
+import com.gurock.testrail.TestRailClient;
 import de.nexible.gauge.testrail.sync.context.TestRailSyncDefaultContext;
 import org.mockito.Mockito;
 
@@ -12,8 +13,8 @@ final class TestSyncContext extends TestRailSyncDefaultContext {
     }
 
     @Override
-    public APIClient getTestRailClient() {
-        return client;
+    public TestRailClient getTestRailClient() {
+        return new TestRailClient(client);
     }
 
     @Override

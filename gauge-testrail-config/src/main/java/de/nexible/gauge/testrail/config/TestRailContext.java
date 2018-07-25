@@ -1,10 +1,7 @@
 package de.nexible.gauge.testrail.config;
 
-import com.google.common.base.Strings;
-import com.gurock.testrail.APIClient;
+import com.gurock.testrail.TestRailClient;
 
-import java.io.IOException;
-import java.nio.file.Path;
 import java.util.logging.Level;
 
 /**
@@ -18,16 +15,14 @@ public interface TestRailContext {
      *
      * @return
      */
-    APIClient getTestRailClient();
+    TestRailClient getTestRailClient();
 
+    /**
+     * Returns whether no data shall be submitted or changed during a run
+     *
+     * @return
+     */
     boolean isDryRun();
 
     Level getLogLevel();
-
-    default Level readLogLevel(String level) {
-        if (!Strings.isNullOrEmpty(level)) {
-            return Level.parse(level.trim());
-        }
-        return Level.INFO;
-    };
 }

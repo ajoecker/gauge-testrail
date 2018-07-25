@@ -1,15 +1,11 @@
 package de.nexible.gauge.testrail.sync.sync;
 
-import com.google.common.collect.ImmutableMap;
-import com.gurock.testrail.APIClient;
 import com.gurock.testrail.APIException;
 import de.nexible.gauge.testrail.sync.context.TestRailSyncContext;
 import de.nexible.gauge.testrail.sync.model.GaugeSpec;
-import org.json.simple.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -42,7 +38,6 @@ public class TestRailSectionSync implements Sync {
                     logger.info(() -> "'" + s.getHeading() + "' has now received tag: " + s.getTag());
                 } catch (IOException | APIException e) {
                     logger.log(Level.WARNING, e, () -> "Failed to sync section '" + s.getHeading() + "'");
-                    return Collections.emptyList();
                 }
             }
             changedData.add(s);
@@ -60,31 +55,18 @@ public class TestRailSectionSync implements Sync {
 
     private long createNewSection(GaugeSpec s) throws IOException, APIException {
         int projectId = testRailContext.projectId();
-        APIClient testRailClient = testRailContext.getTestRailClient();
-        JSONObject result = (JSONObject) testRailClient.sendPost("add_section/" + projectId, ImmutableMap.of("name", s.getHeading()));
-        return (long) result.get("id");
+        return testRailContext.getTestRailClient().addSection(projectId, s.getHeading());
     }
 
     private void checkForSectionUpdate(GaugeSpec s) {
         int sectionId = parseSectionId(s.getTag());
         try {
-            String sectionName = getSectionFromTestRail(sectionId);
+            String sectionName = testRailContext.getTestRailClient().getSection(sectionId);
             if (s.hasHeadingChanged(sectionName)) {
-                updateSectionInTestRail(s.getHeading(), sectionId);
+                testRailContext.getTestRailClient().updateSection(sectionId, s.getHeading());
             }
         } catch (IOException | APIException e) {
-            // TODO logging
+            logger.log(Level.WARNING, e, () -> "Failed to update section");
         }
-    }
-
-    private void updateSectionInTestRail(String specName, int sectionId) throws IOException, APIException {
-        APIClient testRailClient = testRailContext.getTestRailClient();
-        testRailClient.sendPost("update_section/" + sectionId, ImmutableMap.of("name", specName));
-    }
-
-    private String getSectionFromTestRail(int sectionId) throws IOException, APIException {
-        APIClient testRailClient = testRailContext.getTestRailClient();
-        JSONObject get = (JSONObject) testRailClient.sendGet("get_section/" + sectionId);
-        return String.valueOf(get.get("name"));
     }
 }

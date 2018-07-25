@@ -2,7 +2,6 @@ package de.nexible.gauge.testrail;
 
 import com.gurock.testrail.APIException;
 import com.thoughtworks.gauge.Messages;
-import com.thoughtworks.gauge.Spec;
 import de.nexible.gauge.testrail.config.TestRailUtil;
 import de.nexible.gauge.testrail.context.TestRailReportContext;
 import de.nexible.gauge.testrail.model.TestResult;
@@ -17,7 +16,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import static de.nexible.gauge.testrail.TestRailTimespanHandler.toTimeFormat;
 import static de.nexible.gauge.testrail.model.TestResult.TestResultBuilder.newTestResult;
 
 /**
@@ -50,10 +48,14 @@ public final class TestRailDefaultHandler implements GaugeResultListener {
             logger.warning(() -> "no test results found or none is tagged with a testrail case id. No results are posted to TestRail");
             return;
         }
+        send(testRailRunId, jsonObject);
+    }
+
+    private void send(String testRailRunId, JSONObject jsonObject) {
         logger.info(() -> "sending results to testrail for run #" + testRailRunId);
         if (!testRailContext.isDryRun()) {
             try {
-                testRailContext.getTestRailClient().sendPost("add_results_for_cases/" + testRailRunId, jsonObject);
+                testRailContext.getTestRailClient().addResult(testRailRunId, jsonObject);
             } catch (IOException | APIException e) {
                 logger.log(Level.WARNING, e, () -> "Failed to send to TestRail.");
             }
