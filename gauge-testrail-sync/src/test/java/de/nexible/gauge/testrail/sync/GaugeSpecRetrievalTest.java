@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.thoughtworks.gauge.Spec;
 import de.nexible.gauge.testrail.sync.model.GaugeScenario;
 import de.nexible.gauge.testrail.sync.model.GaugeSpec;
+import de.nexible.gauge.testrail.sync.sync.CaseFormatter;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -12,7 +13,6 @@ import java.io.InputStream;
 import java.net.URL;
 
 import static de.nexible.gauge.testrail.sync.GaugeSpecRetrieval.retrieveSpecs;
-import static de.nexible.gauge.testrail.sync.sync.CaseFormatter.getCaseText;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class GaugeSpecRetrievalTest {
@@ -115,7 +115,7 @@ public class GaugeSpecRetrievalTest {
         try (InputStream ins = resource.openStream()) {
             Spec.ProtoSpec protoSpec = Spec.ProtoSpec.parseFrom(ins);
             GaugeSpec gaugeSpecs = retrieveSpecs(ImmutableList.of(protoSpec)).get(0);
-            String caseText = getCaseText(gaugeSpecs, gaugeSpecs.getScenarios().get(0));
+            String caseText = new CaseFormatter("").getCaseText(gaugeSpecs, gaugeSpecs.getScenarios().get(0));
             assertThat(caseText).isEqualTo(expected);
         }
     }
@@ -134,10 +134,10 @@ public class GaugeSpecRetrievalTest {
                 "||4|0|0|Haftpflicht";
 
         URL resources = GaugeSpecRetrievalTest.class.getResource("/spec_with_table.serialised");
-        try(InputStream ins = resources.openStream()) {
+        try (InputStream ins = resources.openStream()) {
             Spec.ProtoSpec protoSpec = Spec.ProtoSpec.parseFrom(ins);
             GaugeSpec gaugeSpec = retrieveSpecs(ImmutableList.of(protoSpec)).get(0);
-            String caseText = getCaseText(gaugeSpec, gaugeSpec.getScenarios().get(0));
+            String caseText = new CaseFormatter("").getCaseText(gaugeSpec, gaugeSpec.getScenarios().get(0));
             assertThat(caseText).isEqualTo(expected);
         }
     }

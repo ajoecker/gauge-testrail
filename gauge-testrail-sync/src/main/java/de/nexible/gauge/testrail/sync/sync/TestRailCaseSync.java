@@ -13,18 +13,16 @@ import java.util.logging.Logger;
 
 import static de.nexible.gauge.testrail.config.TestRailUtil.parseCaseId;
 import static de.nexible.gauge.testrail.config.TestRailUtil.parseSectionId;
-import static de.nexible.gauge.testrail.sync.sync.CaseFormatter.getCaseText;
-import static de.nexible.gauge.testrail.sync.sync.CaseFormatter.getScenarioLocation;
 
 public class TestRailCaseSync implements Sync {
     private static final Logger logger = Logger.getLogger(TestRailCaseSync.class.getName());
 
-    private TestRailSyncContext testRailContext;
-    private String gaugeProjectRoot;
+    private final TestRailSyncContext testRailContext;
+    private final CaseFormatter caseFormatter;
 
-    public TestRailCaseSync(TestRailSyncContext testRailContext, String gaugeProjectRoot) {
+    public TestRailCaseSync(TestRailSyncContext testRailContext, CaseFormatter caseFormatter) {
         this.testRailContext = testRailContext;
-        this.gaugeProjectRoot = gaugeProjectRoot;
+        this.caseFormatter = caseFormatter;
     }
 
     @Override
@@ -64,14 +62,14 @@ public class TestRailCaseSync implements Sync {
 
     private JSONObject buildDataObject(GaugeSpec spec, GaugeScenario scenario) {
         JSONObject data = new JSONObject();
-        data.put("custom_steps", getCaseText(spec, scenario));
+        data.put("custom_steps", caseFormatter.getCaseText(spec, scenario));
         data.put("template_id", testRailContext.getTemplateId());
         data.put("title", scenario.getHeading());
         int automationId = testRailContext.getAutomationId();
         if (testRailContext.isKnown(automationId)) {
             data.put("custom_automation_type", automationId);
         }
-        getScenarioLocation(spec, scenario, gaugeProjectRoot).ifPresent(location -> data.put("custom_scenario_location", location));
+        caseFormatter.getScenarioLocation(spec, scenario).ifPresent(location -> data.put("custom_scenario_location", location));
 
         return data;
     }

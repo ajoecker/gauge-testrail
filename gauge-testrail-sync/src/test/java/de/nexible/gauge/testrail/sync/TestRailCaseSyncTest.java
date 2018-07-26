@@ -7,6 +7,7 @@ import de.nexible.gauge.testrail.config.GaugeContext;
 import de.nexible.gauge.testrail.sync.model.GaugeScenario;
 import de.nexible.gauge.testrail.sync.model.GaugeSpec;
 import de.nexible.gauge.testrail.sync.model.Tagged;
+import de.nexible.gauge.testrail.sync.sync.CaseFormatter;
 import de.nexible.gauge.testrail.sync.sync.TestRailCaseSync;
 import org.json.simple.JSONObject;
 import org.junit.jupiter.api.Test;
@@ -72,7 +73,7 @@ public class TestRailCaseSyncTest {
     }
 
     private List<GaugeSpec> sync(APIClient client, GaugeSpec gaugeSpec) {
-        TestRailCaseSync testRailCaseSync = new TestRailCaseSync(new TestSyncContext(client), "");
+        TestRailCaseSync testRailCaseSync = new TestRailCaseSync(new TestSyncContext(client), new CaseFormatter(""));
         return testRailCaseSync.sync(Arrays.asList(gaugeSpec));
     }
 

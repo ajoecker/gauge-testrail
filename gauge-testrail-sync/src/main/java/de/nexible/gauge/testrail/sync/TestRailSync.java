@@ -8,6 +8,7 @@ import de.nexible.gauge.testrail.sync.context.TestRailSyncDefaultContext;
 import de.nexible.gauge.testrail.sync.gauge.GaugeConnector;
 import de.nexible.gauge.testrail.sync.gauge.GaugeSpecRetriever;
 import de.nexible.gauge.testrail.sync.model.GaugeSpec;
+import de.nexible.gauge.testrail.sync.sync.CaseFormatter;
 import de.nexible.gauge.testrail.sync.sync.SpecModifier;
 import de.nexible.gauge.testrail.sync.sync.Sync;
 import de.nexible.gauge.testrail.sync.sync.TestRailCaseSync;
@@ -41,7 +42,7 @@ public class TestRailSync implements Sync {
     @Override
     public List<GaugeSpec> sync(List<GaugeSpec> specData) {
         List<GaugeSpec> specList = new TestRailSectionSync(testRailContext).sync(specData);
-        specList = new TestRailCaseSync(testRailContext, gaugeProjectDir).sync(specList);
+        specList = new TestRailCaseSync(testRailContext, new CaseFormatter(gaugeProjectDir)).sync(specList);
         return new SpecModifier(testRailContext).sync(specList);
     }
 }
