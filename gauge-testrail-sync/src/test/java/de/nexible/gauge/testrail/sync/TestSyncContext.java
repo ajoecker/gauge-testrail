@@ -8,7 +8,7 @@ import org.mockito.Mockito;
 final class TestSyncContext extends TestRailSyncDefaultContext {
     private APIClient client;
 
-    public TestSyncContext(APIClient client) {
+    TestSyncContext(APIClient client) {
         this.client = client;
     }
 

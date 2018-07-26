@@ -4,7 +4,10 @@ import de.nexible.gauge.testrail.sync.model.GaugeScenario;
 import de.nexible.gauge.testrail.sync.model.GaugeSpec;
 import de.nexible.gauge.testrail.sync.model.StepItem;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 
 import static java.util.stream.Collectors.joining;
@@ -12,6 +15,14 @@ import static java.util.stream.Collectors.joining;
 public class CaseFormatter {
     private CaseFormatter() {
         // static
+    }
+
+    public static Optional<String> getScenarioLocation(GaugeSpec spec, GaugeScenario scenario, String gaugeProjectRoot) {
+        long scenarioLocation = scenario.getScenarioLocation();
+        if (scenarioLocation == 0) {
+            return Optional.empty();
+        }
+        return Optional.of(Paths.get(gaugeProjectRoot).relativize(spec.getSpecFile()) + ":" + scenarioLocation);
     }
 
     public static String getCaseText(GaugeSpec spec, GaugeScenario scenario) {

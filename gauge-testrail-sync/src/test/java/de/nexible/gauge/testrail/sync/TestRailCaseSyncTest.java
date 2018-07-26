@@ -3,6 +3,7 @@ package de.nexible.gauge.testrail.sync;
 import com.gurock.testrail.APIClient;
 import com.gurock.testrail.APIException;
 import com.thoughtworks.gauge.Spec;
+import de.nexible.gauge.testrail.config.GaugeContext;
 import de.nexible.gauge.testrail.sync.model.GaugeScenario;
 import de.nexible.gauge.testrail.sync.model.GaugeSpec;
 import de.nexible.gauge.testrail.sync.model.Tagged;
@@ -38,8 +39,7 @@ public class TestRailCaseSyncTest {
 
         gaugeSpec.addScenario(scenario);
 
-        TestRailCaseSync testRailCaseSync = new TestRailCaseSync(new TestSyncContext(client));
-        List<GaugeSpec> sync = testRailCaseSync.sync(Arrays.asList(gaugeSpec));
+        List<GaugeSpec> sync = sync(client, gaugeSpec);
 
         verify(client, atLeastOnce()).sendPost(eq("add_case/12"), any());
 
@@ -63,13 +63,17 @@ public class TestRailCaseSyncTest {
 
         gaugeSpec.addScenario(scenario);
 
-        TestRailCaseSync testRailCaseSync = new TestRailCaseSync(new TestSyncContext(client));
-        List<GaugeSpec> sync = testRailCaseSync.sync(Arrays.asList(gaugeSpec));
+        List<GaugeSpec> sync = sync(client, gaugeSpec);
 
         verify(client, atLeastOnce()).sendPost(eq("update_case/234"), any());
 
         assertThat(sync).flatExtracting(GaugeSpec::getScenarios).extracting(GaugeScenario::hasBeenTagged).containsOnly(false);
         assertThat(sync).flatExtracting(GaugeSpec::getScenarios).extracting(GaugeScenario::getTag).containsOnly("C234");
+    }
+
+    private List<GaugeSpec> sync(APIClient client, GaugeSpec gaugeSpec) {
+        TestRailCaseSync testRailCaseSync = new TestRailCaseSync(new TestSyncContext(client), "");
+        return testRailCaseSync.sync(Arrays.asList(gaugeSpec));
     }
 
     private Spec.ProtoItem createStep(String stepDesc) {

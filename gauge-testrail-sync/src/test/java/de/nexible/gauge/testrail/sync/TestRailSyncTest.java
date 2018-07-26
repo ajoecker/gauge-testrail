@@ -31,7 +31,7 @@ public class TestRailSyncTest {
     @Test
     public void specWithNoTagsAtAll_SectionAndCasesAreAdded() throws IOException, APIException {
         APIClient client = Mockito.mock(APIClient.class);
-        TestRailSync testRailSync = new TestRailSync(new TestSyncContext(client));
+        TestRailSync testRailSync = syncer(client);
 
         Path dummySpecFile = createDummySpecFile();
 
@@ -52,7 +52,7 @@ public class TestRailSyncTest {
     @Test
     public void specFileIsUpdatedCorrectlyForNewTags() throws IOException, APIException {
         APIClient client = Mockito.mock(APIClient.class);
-        TestRailSync testRailSync = new TestRailSync(new TestSyncContext(client));
+        TestRailSync testRailSync = syncer(client);
 
         Path dummySpecFile = createDummySpecFile();
         Files.write(dummySpecFile, Arrays.asList("# the spec",
@@ -73,7 +73,7 @@ public class TestRailSyncTest {
     @Test
     public void specWithTag_SectionIsNotChangedAndCasesAreAdded() throws IOException, APIException {
         APIClient client = Mockito.mock(APIClient.class);
-        TestRailSync testRailSync = new TestRailSync(new TestSyncContext(client));
+        TestRailSync testRailSync = syncer(client);
 
         Path dummySpecFile = createDummySpecFile();
 
@@ -97,7 +97,7 @@ public class TestRailSyncTest {
     @Test
     public void specWithNonTestRail_SectionAndCasesAreAdded() throws IOException, APIException {
         APIClient client = Mockito.mock(APIClient.class);
-        TestRailSync testRailSync = new TestRailSync(new TestSyncContext(client));
+        TestRailSync testRailSync = syncer(client);
 
         Path dummySpecFile = createDummySpecFile();
 
@@ -119,7 +119,7 @@ public class TestRailSyncTest {
     @Test
     public void specWithChangedHeading_SectionIsUpdated() throws IOException, APIException {
         APIClient client = Mockito.mock(APIClient.class);
-        TestRailSync testRailSync = new TestRailSync(new TestSyncContext(client));
+        TestRailSync testRailSync = syncer(client);
 
         Path dummySpecFile = createDummySpecFile();
 
@@ -144,7 +144,7 @@ public class TestRailSyncTest {
     @Test
     public void specFileIsUpdatedCorrectlyForExistingTags() throws IOException, APIException {
         APIClient client = Mockito.mock(APIClient.class);
-        TestRailSync testRailSync = new TestRailSync(new TestSyncContext(client));
+        TestRailSync testRailSync = syncer(client);
 
         Path dummySpecFile = createDummySpecFile();
         Files.write(dummySpecFile, Arrays.asList("# the spec",
@@ -173,7 +173,7 @@ public class TestRailSyncTest {
     @Test
     public void updateTestCases() throws IOException, APIException {
         APIClient client = Mockito.mock(APIClient.class);
-        TestRailSync testRailSync = new TestRailSync(new TestSyncContext(client));
+        TestRailSync testRailSync = syncer(client);
 
         Path dummySpecFile = createDummySpecFile();
 
@@ -194,6 +194,10 @@ public class TestRailSyncTest {
                 () -> assertThat(gaugeSpec.hasBeenTagged()).isFalse(),
                 () -> assertThat(gaugeSpec.getHeading()).isEqualTo("the spec"),
                 () -> assertThat(gaugeSpec.getScenarios()).extracting(Tagged::hasBeenTagged).containsOnly(false));
+    }
+
+    private TestRailSync syncer(APIClient client) {
+        return new TestRailSync(new TestSyncContext(client), "");
     }
 
     private GaugeSpec doTheSync(TestRailSync testRailSync, Spec.ProtoSpec.Builder protospec) {

@@ -1,5 +1,6 @@
 package de.nexible.gauge.testrail.sync;
 
+import de.nexible.gauge.testrail.config.GaugeContext;
 import de.nexible.gauge.testrail.config.GaugeDefaultContext;
 import de.nexible.gauge.testrail.config.GaugeTestRailLogger;
 import de.nexible.gauge.testrail.sync.context.TestRailSyncContext;
@@ -17,17 +18,20 @@ import java.util.List;
 import static de.nexible.gauge.testrail.sync.GaugeSpecRetrieval.retrieveSpecs;
 
 public class TestRailSync implements Sync {
-    private TestRailSyncContext testRailContext;
+    private final TestRailSyncContext testRailContext;
+    private final String gaugeProjectDir;
 
-    public TestRailSync(TestRailSyncContext testRailContext) {
+    public TestRailSync(TestRailSyncContext testRailContext, String gaugeProjectDir) {
         this.testRailContext = testRailContext;
+        this.gaugeProjectDir = gaugeProjectDir;
     }
 
     public static void main(String[] args) {
         TestRailSyncContext testRailContext = new TestRailSyncDefaultContext();
-        GaugeTestRailLogger.initializeLogger(new GaugeDefaultContext(), "testrail-sync.log", testRailContext.getLogLevel());
+        GaugeContext gaugeContext = new GaugeDefaultContext();
+        GaugeTestRailLogger.initializeLogger(gaugeContext, "testrail-sync.log", testRailContext.getLogLevel());
         List<GaugeSpec> specs = getSpecs(testRailContext);
-        new TestRailSync(testRailContext).sync(specs);
+        new TestRailSync(testRailContext, gaugeContext.getGaugeProjectRoot()).sync(specs);
     }
 
     private static List<GaugeSpec> getSpecs(TestRailSyncContext testRailContext) {
@@ -37,7 +41,7 @@ public class TestRailSync implements Sync {
     @Override
     public List<GaugeSpec> sync(List<GaugeSpec> specData) {
         List<GaugeSpec> specList = new TestRailSectionSync(testRailContext).sync(specData);
-        specList = new TestRailCaseSync(testRailContext).sync(specList);
+        specList = new TestRailCaseSync(testRailContext, gaugeProjectDir).sync(specList);
         return new SpecModifier(testRailContext).sync(specList);
     }
 }

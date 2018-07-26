@@ -14,14 +14,17 @@ import java.util.logging.Logger;
 import static de.nexible.gauge.testrail.config.TestRailUtil.parseCaseId;
 import static de.nexible.gauge.testrail.config.TestRailUtil.parseSectionId;
 import static de.nexible.gauge.testrail.sync.sync.CaseFormatter.getCaseText;
+import static de.nexible.gauge.testrail.sync.sync.CaseFormatter.getScenarioLocation;
 
 public class TestRailCaseSync implements Sync {
     private static final Logger logger = Logger.getLogger(TestRailCaseSync.class.getName());
 
     private TestRailSyncContext testRailContext;
+    private String gaugeProjectRoot;
 
-    public TestRailCaseSync(TestRailSyncContext testRailContext) {
+    public TestRailCaseSync(TestRailSyncContext testRailContext, String gaugeProjectRoot) {
         this.testRailContext = testRailContext;
+        this.gaugeProjectRoot = gaugeProjectRoot;
     }
 
     @Override
@@ -47,7 +50,7 @@ public class TestRailCaseSync implements Sync {
     }
 
     private String getCaseTag(GaugeSpec spec, GaugeScenario scenario) throws IOException, APIException {
-        JSONObject data = buildDataObject(getCaseText(spec, scenario), scenario.getHeading());
+        JSONObject data = buildDataObject(spec, scenario);
         if (testRailContext.isDryRun()) {
             logger.info(() -> "Dry run, use artifical case tag");
             System.out.println("Would send " + data);
@@ -59,15 +62,17 @@ public class TestRailCaseSync implements Sync {
         return testRailContext.getTestRailClient().addCase(parseSectionId(spec.getTag()), data);
     }
 
-    private JSONObject buildDataObject(String text, String heading) {
+    private JSONObject buildDataObject(GaugeSpec spec, GaugeScenario scenario) {
         JSONObject data = new JSONObject();
-        data.put("custom_steps", text);
+        data.put("custom_steps", getCaseText(spec, scenario));
         data.put("template_id", testRailContext.getTemplateId());
-        data.put("title", heading);
+        data.put("title", scenario.getHeading());
         int automationId = testRailContext.getAutomationId();
         if (testRailContext.isKnown(automationId)) {
             data.put("custom_automation_type", automationId);
         }
+        getScenarioLocation(spec, scenario, gaugeProjectRoot).ifPresent(location -> data.put("custom_scenario_location", location));
+
         return data;
     }
 }
