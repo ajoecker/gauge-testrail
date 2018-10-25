@@ -45,20 +45,21 @@ public class GaugeSpecRetrieval {
     private static void stepExtraction(List<Spec.ProtoItem> protoItems, int level, List<StepItem> steps) {
         for (Spec.ProtoItem item : protoItems) {
             if (item.getItemType() == Spec.ProtoItem.ItemType.Step) {
-                Spec.ProtoStep step = item.getStep();
-                steps.add(newStepItem(step.getActualText(), level));
-                handleFragments(step, level, steps);
+                addStep(steps, item.getStep(), level);
             } else if (item.getItemType() == Spec.ProtoItem.ItemType.Concept) {
                 Spec.ProtoConcept concept = item.getConcept();
-                Spec.ProtoStep step = concept.getConceptStep();
-                steps.add(newStepItem(step.getActualText(), level));
-                handleFragments(step, level, steps);
+                addStep(steps, concept.getConceptStep(), level);
                 stepExtraction(concept.getStepsList(), level + 1, steps);
             }
         }
     }
 
-    private static void handleFragments(Spec.ProtoStep step, int level, List<StepItem> steps) {
+    private static void addStep(List<StepItem> steps, Spec.ProtoStep step, int level) {
+        steps.add(newStepItem(step.getActualText(), level));
+        extractFragements(step, level, steps);
+    }
+
+    private static void extractFragements(Spec.ProtoStep step, int level, List<StepItem> steps) {
         step.getFragmentsList().stream()
                 .filter(fragment -> fragment.getFragmentType() == Spec.Fragment.FragmentType.Parameter)
                 .forEach(fragment -> handleFragment(fragment, level, steps));
@@ -73,12 +74,11 @@ public class GaugeSpecRetrieval {
 
     private static void handleTable(Spec.Parameter parameter, int level, List<StepItem> steps) {
         Spec.ProtoTable table = parameter.getTable();
-        Spec.ProtoTableRow headers = table.getHeaders();
-        String header = headers.getCellsList().stream().collect(Collectors.joining("|:", "|||:", ""));
-        steps.add(newStepItem(header, level));
-        for (Spec.ProtoTableRow row : table.getRowsList()) {
-            String rowContent = row.getCellsList().stream().collect(Collectors.joining("|", "||", ""));
-            steps.add(newStepItem(rowContent, level));
-        }
+        steps.add(newStepItem(tableJoin(table.getHeaders(), "|:", "|||:"), level));
+        table.getRowsList().stream().map(row -> newStepItem(tableJoin(row, "|", "||"), level)).forEach(steps::add);
+    }
+
+    private static String tableJoin(Spec.ProtoTableRow tableRow, String delimiter, String prefix) {
+        return tableRow.getCellsList().stream().collect(Collectors.joining(delimiter, prefix, ""));
     }
 }

@@ -2,7 +2,6 @@ package de.nexible.gauge.testrail;
 
 import com.gurock.testrail.APIException;
 import com.thoughtworks.gauge.Messages;
-import com.thoughtworks.gauge.Spec;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -11,10 +10,8 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
-import static de.nexible.gauge.testrail.TestRailTimespanHandler.toTimeFormat;
 import static java.lang.Integer.parseInt;
 import static java.lang.System.getenv;
-import static java.lang.System.setOut;
 
 /**
  * The {@link GaugeConnector} opens a socket to listen to gauge events and propagates the event
@@ -69,7 +66,6 @@ public class GaugeConnector {
                 } else if (message.getMessageType() == Messages.Message.MessageType.ScenarioExecutionEnding) {
                     Messages.ScenarioInfo scenario = message.getScenarioExecutionEndingRequest().getCurrentExecutionInfo().getCurrentScenario();
                     gaugeResultListeners.forEach(l -> l.gaugeResult(scenario, TestRailTimespanHandler.toTimeFormat(System.currentTimeMillis() - scenarioStartTime.get(scenario.getName()))));
-
                 } else if (message.getMessageType() == Messages.Message.MessageType.SuiteExecutionResult) {
                     return;
                 }

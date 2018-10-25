@@ -65,7 +65,7 @@
                             <descriptors>
                                 <descriptor>src/main/assembly/dist.xml</descriptor>
                             </descriptors>
-                            <finalName>${plugin.output.name}-0.0.1</finalName>
+                            <finalName>${plugin.output.name}-0.0.2</finalName>
                             <appendAssemblyId>false</appendAssemblyId>
                             <outputDirectory>${plugin.output.directory}</outputDirectory>
                         </configuration>

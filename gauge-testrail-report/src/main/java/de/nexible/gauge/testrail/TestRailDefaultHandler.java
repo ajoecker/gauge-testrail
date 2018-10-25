@@ -12,10 +12,13 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import static com.google.common.base.Strings.isNullOrEmpty;
 import static de.nexible.gauge.testrail.model.TestResult.TestResultBuilder.newTestResult;
 
 /**
@@ -37,18 +40,17 @@ public final class TestRailDefaultHandler implements GaugeResultListener {
     public void gaugeResult(Messages.ScenarioInfo scenarioInfo, String executionTime) {
         String testRailRunId = testRailContext.getTestRailRunId();
 
-        if (testRailRunId == null || "".equals(testRailRunId)) {
+        if (isNullOrEmpty(testRailRunId)) {
             logger.warning(() -> "No testrail run id given. No results are posted to TestRail.");
             return;
         }
 
         logger.info(() -> "handling gauge result for a total scenarios: " + scenarioInfo.getName());
-        JSONObject jsonObject = convertToJson(scenarioInfo, executionTime);
-        if (jsonObject.isEmpty()) {
-            logger.warning(() -> "no test results found or none is tagged with a testrail case id. No results are posted to TestRail");
-            return;
-        }
-        send(testRailRunId, jsonObject);
+        convertToJson(scenarioInfo, executionTime)
+                .ifPresentOrElse(
+                        data -> send(testRailRunId, data),
+                        () -> logger.warning(() -> "no test results found or none is tagged with a testrail case id. " +
+                                "No results are posted to TestRail"));
     }
 
     private void send(String testRailRunId, JSONObject jsonObject) {
@@ -57,7 +59,8 @@ public final class TestRailDefaultHandler implements GaugeResultListener {
             try {
                 testRailContext.getTestRailClient().addResult(testRailRunId, jsonObject);
             } catch (IOException | APIException e) {
-                logger.log(Level.WARNING, e, () -> "Failed to send to TestRail.");
+                logger.info(() -> "could not send " + jsonObject + " to run " + testRailRunId);
+                logger.log(Level.WARNING, e, () -> "Failed to send to TestRail: " + e.getMessage());
             }
             logger.info(() -> "results have been sent");
         } else {
@@ -66,16 +69,17 @@ public final class TestRailDefaultHandler implements GaugeResultListener {
         }
     }
 
-    private JSONObject convertToJson(Messages.ScenarioInfo scenarioInfo, String executionTime) {
-        JSONObject jsonObject = new JSONObject();
+    private Optional<JSONObject> convertToJson(Messages.ScenarioInfo scenarioInfo, String executionTime) {
         List<TestResult> testResult = createTestResult(scenarioInfo, executionTime);
         JSONArray collect = testResult.stream().map(TestResult::toJsonObject).collect(JSONArray::new, JSONArray::add, (x, y) -> {
         });
 
         if (!collect.isEmpty()) {
+            JSONObject jsonObject = new JSONObject();
             jsonObject.put("results", collect);
+            return Optional.of(jsonObject);
         }
-        return jsonObject;
+        return Optional.empty();
     }
 
     private List<TestResult> createTestResult(Messages.ScenarioInfo scenarioInfo, String executionTime) {

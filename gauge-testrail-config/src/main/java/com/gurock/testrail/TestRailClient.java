@@ -1,9 +1,11 @@
 package com.gurock.testrail;
 
 import com.google.common.collect.ImmutableMap;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.io.IOException;
+import java.util.Optional;
 
 public class TestRailClient {
     private APIClient client;
@@ -45,5 +47,17 @@ public class TestRailClient {
     public String addCase(int sectionId, JSONObject data) throws IOException, APIException {
         JSONObject result = (JSONObject) client.sendPost("add_case/" + sectionId, data);
         return "C" + result.get("id");
+    }
+
+    public Optional<Long> getSectionId(String heading, int projectId) throws IOException, APIException {
+        JSONArray result = (JSONArray) client.sendGet("get_sections/" + projectId);
+        for(Object o : result) {
+            JSONObject jsonObject = (JSONObject) o;
+            String name = String.valueOf(jsonObject.get("name"));
+            if (heading.equalsIgnoreCase(name)) {
+               return Optional.of((long)jsonObject.get("id"));
+            }
+        }
+        return Optional.empty();
     }
 }

@@ -20,9 +20,13 @@ public class TestRailDefaultContext implements TestRailContext {
 
     @Override
     public boolean isDryRun() {
-        String dryRun = System.getenv("testrail.dryRun");
-        if (!Strings.isNullOrEmpty(dryRun)) {
-            return Boolean.parseBoolean(dryRun.trim());
+        return readBoolean("testrail.dryRun");
+    }
+
+    protected boolean readBoolean(String key) {
+        String value = System.getenv(key);
+        if (!Strings.isNullOrEmpty(value)) {
+            return Boolean.parseBoolean(value.trim());
         }
         return false;
     }
@@ -42,6 +46,4 @@ public class TestRailDefaultContext implements TestRailContext {
         }
         return Level.INFO;
     }
-
-    ;
 }

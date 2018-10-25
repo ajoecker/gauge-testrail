@@ -51,7 +51,7 @@ public class TestRailCaseSync implements Sync {
         JSONObject data = buildDataObject(spec, scenario);
         if (testRailContext.isDryRun()) {
             logger.info(() -> "Dry run, use artifical case tag");
-            System.out.println("Would send " + data);
+            logger.info(() -> "Would send " + data);
             return "C999";
         }
         if (scenario.hasTag()) {

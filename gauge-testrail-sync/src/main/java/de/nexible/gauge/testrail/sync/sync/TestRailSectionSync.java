@@ -7,6 +7,7 @@ import de.nexible.gauge.testrail.sync.model.GaugeSpec;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -55,7 +56,13 @@ public class TestRailSectionSync implements Sync {
 
     private long createNewSection(GaugeSpec s) throws IOException, APIException {
         int projectId = testRailContext.projectId();
-        return testRailContext.getTestRailClient().addSection(projectId, s.getHeading());
+        String heading = s.getHeading();
+
+        Optional<Long> id = testRailContext.getTestRailClient().getSectionId(heading, projectId);
+        if (id.isPresent()) {
+            return id.get();
+        }
+        return testRailContext.getTestRailClient().addSection(projectId, heading);
     }
 
     private void checkForSectionUpdate(GaugeSpec s) {
