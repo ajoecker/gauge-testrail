@@ -83,6 +83,10 @@ public final class TestRailAuditArtifactHandler implements GaugeResultListener {
     }
 
     private Set<String> buildModifiedSpecListForScenario(Messages.ScenarioInfo scenarioInfo) throws IOException {
+        if (IS_FILE_PATH_FOR_SCENARIOS_TOTALLY_BOGUS) {
+            return new HashSet<String>();
+        }
+
         // from the parallel ruby code:
         //        changed_spec_files = `git diff --name-status master | grep "spec.rb"`.strip.split(/\n/)
         //          .select { |line| line[0] == 'M' || line[0] == 'A' }
@@ -106,7 +110,7 @@ public final class TestRailAuditArtifactHandler implements GaugeResultListener {
                                 .collect(Collectors.toSet());
     }
 
-    private void addUnannotatedTests(Messages.ScenarioInfo scenarioInfo) throws IOException {
+    private synchronized void addUnannotatedTests(Messages.ScenarioInfo scenarioInfo) throws IOException {
         final Set<String> modifiedSpecSet = buildModifiedSpecListForScenario(scenarioInfo);
 
         List<String> unnanotatedTests = scenarioInfo.getTagsList().stream()

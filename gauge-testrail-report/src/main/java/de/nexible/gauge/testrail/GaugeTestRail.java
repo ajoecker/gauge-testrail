@@ -32,7 +32,7 @@ public class GaugeTestRail {
             Logger.getLogger(GaugeTestRail.class.getName()).info(() -> "TestRail plugin is runs for " + testRailContext.getTestRailRunId());
         }
         GaugeConnector gaugeConnector = new GaugeConnector();
-        gaugeConnector.addGaugeResultListener(new TestRailDefaultHandler(testRailContext));
+        gaugeConnector.addGaugeResultListener(new TestRailAuditArtifactHandler(testRailContext));
         gaugeConnector.connect();
         gaugeConnector.listen();
     }
