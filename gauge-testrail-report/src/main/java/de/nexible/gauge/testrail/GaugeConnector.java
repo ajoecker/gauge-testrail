@@ -2,6 +2,7 @@ package de.nexible.gauge.testrail;
 
 import com.gurock.testrail.APIException;
 import com.thoughtworks.gauge.Messages;
+import de.nexible.gauge.testrail.config.Environment;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -11,7 +12,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
 import static java.lang.Integer.parseInt;
-import static java.lang.System.getenv;
 
 /**
  * The {@link GaugeConnector} opens a socket to listen to gauge events and propagates the event
@@ -34,7 +34,7 @@ public class GaugeConnector {
      * Opens a socket to listen to gauge events
      */
     public void connect() {
-        int port = parseInt(getenv("plugin_connection_port"));
+        int port = parseInt(Environment.get("plugin_connection_port"));
         logger.info(() -> "connecting to gauge port " + port);
         while (true) {
             try {

@@ -1,10 +1,10 @@
 package de.nexible.gauge.testrail.sync.context;
 
+import de.nexible.gauge.testrail.config.Environment;
 import de.nexible.gauge.testrail.config.TestRailDefaultContext;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static java.lang.Integer.parseInt;
-import static java.lang.System.getenv;
 
 /**
  * A {@link TestRailSyncContext} that is used when the plugin runs inside of gauge test run
@@ -40,7 +40,7 @@ public class TestRailSyncDefaultContext extends TestRailDefaultContext implement
     }
 
     private int read(String s) {
-        String getenv = getenv(s);
+        String getenv = Environment.get(s);
         if (isNullOrEmpty(getenv)) {
             return UNKNOWN;
         }

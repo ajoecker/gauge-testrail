@@ -32,6 +32,8 @@ testrail.url = // the base url of the TestRail instance
 testrail.run.id = // the id of the testrun to post the results to
 ```
 
+Alternatively instead of the properties file you can use environment variables (in upper case, with underscore as the separator rather than a dot), e.g. `TESTRAIL_USER`.
+
 ### Uninstall plugin
 Call `gauge uninstall testrail` and remove the entry from the `manifest.json` of the gauge project
 

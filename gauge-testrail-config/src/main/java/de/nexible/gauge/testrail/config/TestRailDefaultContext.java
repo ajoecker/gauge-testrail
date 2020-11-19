@@ -24,7 +24,7 @@ public class TestRailDefaultContext implements TestRailContext {
     }
 
     protected boolean readBoolean(String key) {
-        String value = System.getenv(key);
+        String value = Environment.get(key);
         if (!Strings.isNullOrEmpty(value)) {
             return Boolean.parseBoolean(value.trim());
         }
@@ -32,12 +32,12 @@ public class TestRailDefaultContext implements TestRailContext {
     }
 
     private String read(String key) {
-        return System.getenv(key).trim();
+        return Environment.get(key).trim();
     }
 
     @Override
     public Level getLogLevel() {
-        return readLogLevel(System.getenv("testrail.loglevel"));
+        return readLogLevel(Environment.get("testrail.loglevel"));
     }
 
     private Level readLogLevel(String level) {
