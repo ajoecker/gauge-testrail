@@ -1,5 +1,6 @@
 package de.nexible.gauge.testrail.context;
 
+import de.nexible.gauge.testrail.config.Environment;
 import de.nexible.gauge.testrail.config.TestRailContext;
 import de.nexible.gauge.testrail.config.TestRailDefaultContext;
 
@@ -16,6 +17,6 @@ import java.nio.file.Path;
 public class TestRailReportDefaultContext extends TestRailDefaultContext implements TestRailReportContext {
     @Override
     public String getTestRailRunId() {
-        return System.getenv("testrail.run.id");
+        return Environment.get("testrail.run.id");
     }
 }

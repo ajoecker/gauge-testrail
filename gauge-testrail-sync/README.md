@@ -33,6 +33,8 @@ testrail.gauge.template = // the testrail template to use (it expects to have th
 testrail.automation.type = // optional. the id of the automation type to use
 ```
 
+Alternatively instead of the properties file you can use environment variables (in upper case, with underscore as the separator rather than a dot), e.g. `TESTRAIL_USER`.
+
 Call `gauge docs testrail-sync`
 
 ### Uninstall plugin
